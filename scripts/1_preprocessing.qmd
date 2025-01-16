@@ -1,0 +1,227 @@
+---
+title: "1. Preprocessing"
+format: html
+editor: visual
+---
+
+## Introduction
+
+Generally, the preprocessing workflow for proteomics data encompasses several key steps:
+
+-   **Raw data acquisition:** data collection through mass spectometry techniques.
+
+-   **Database search**: utilisation of databases to match acquired spectra with known protein sequences.
+
+-   **Quantification:** measurement of protein abundance levels.
+
+-   **Normalisation:** normalise data to correct for technical variability (e.g. total ion current, median normalisation).
+
+-   **Log transformation:** application of logarithmic transformation to stabilise variance.
+
+-   **Missing value handling:** addressing and imputing missing values in the dataset (e.g. impute with low values for missing proteins or remove proteins with high missingness).
+
+-   **Batch effect removal:** mitigation of system variation introduced by different experimental batches.
+
+-   **Differential expression analysis:** identification and exploration of proteins showing significant expression differences.
+
+## Data
+
+The data used in this example has been taken from ([Carlyle et al., 2021](https://www.sciencedirect.com/science/article/pii/S0197458021001275?via%3Dihub#sec0002)).
+
+This paper used multiplexed liquid chromatography mass-spectrometry to quantify enriched synaptic proteins from the parietal association cortex of 100 subjects with contrasting levels of AD pathology and cognitive performance.
+
+The protein intensities have been normalised via a multi-step process. Intensities were first normalised using the intensity measured for the bridge sample. An additional normalisation step performed by normalising the protein intensities measured for each sample by the global median of the per-sample median protein intensities.
+
+### Load libraries
+
+```{r, results="hide", message=FALSE}
+library(tidyverse)
+library(openxlsx)
+library(broom)
+```
+
+### Load TMT data
+
+Import the file containing the median-normalised protein quantification data. Each value in the columns represents the abundance of each protein in each sample.
+
+```{r}
+TMT_data = read.xlsx("../data/Table_S3_Carlyle_TMT_synaptosomes_quants.xlsx", rowNames = FALSE)
+
+knitr::kable(head(TMT_data))
+```
+
+```{r, message=FALSE}
+sample_key = read_csv("../data/Table_S1_individual_sample_demographics.csv")
+
+knitr::kable(head(sample_key))
+```
+
+### Exploratory data analysis
+
+Inspect the missingness of the TMT dataset by counting the number of NAs in every non-pool sample.
+
+```{r}
+# Select relevant data (non-pooled samples)
+to_count = select(TMT_data, UniprotAccession, A1:J9)
+# Assign protein names from UniprotAccession to colnames variable
+colnames = to_count$UniprotAccession
+# Transpose the dataset - makes proteins the columns and samples as rows
+to_count = t(to_count[ ,-c(1)])
+# Assign protein names as column headers
+colnames(to_count) = colnames
+# Convert to dataframe
+to_count = as.data.frame(to_count)
+
+knitr::kable(head(to_count))
+```
+
+Count NAs for each protein.
+
+```{r}
+# Count NAs in each column
+# map() applies a function to each column of the dataframe
+N_Nas = map(to_count, ~sum(is.na(.)))
+# Convert the list output from map() into a simple vector of NA counts
+NAs = unlist(N_Nas)
+
+head(NAs)
+```
+
+Transform the results for plotting.
+
+```{r}
+# Convert to dataframe
+NAs = as.data.frame(as.matrix(NAs))
+# Move row names into a column and rename columns
+NAs = rownames_to_column(NAs)
+colnames(NAs) = c("UniprotAccession" ,"NA_count")
+
+knitr::kable(head(NAs))
+```
+
+Plot a histogram showing the distribution of missing data across proteins. For example, a large peak at `NA_count = 0` indicates many proteins have no missing data.
+
+```{r}
+ggplot(data = NAs, aes(x=NA_count)) +
+  geom_histogram(binwidth = 1) +
+  scale_x_continuous(breaks=seq(0,100, by=10))
+```
+
+Calculate how many proteins have complete data (no missing values) in this dataset.
+
+```{r}
+# Calculate total number of proteins (rows) in the dataset
+n_total = nrow(NAs)
+n_total # 9560 proteins
+```
+
+```{r}
+# Calculate the number of proteins (rows) with no missing values
+n_complete = sum(NAs$NA_count == 0)
+n_complete # 4954 complete proteins
+```
+
+Out of the 9560 proteins that were detected in at least one sample, 4954 proteins were quantified in every (non-pooled) sample.
+
+## Filtering missing data
+
+Exclude proteins with high missingness - in this case, remove proteins with more than 30% missing values (NAs).
+
+```{r}
+# Filter for samples with NA_counts of 30 or less
+to_retain = NAs %>%
+  filter(NA_count < 31)
+
+# Replace hypens with periods in the UniprotAccession column in TMT_data (to match to_retain)
+TMT_data$UniprotAccession <- gsub("-", ".", TMT_data$UniprotAccession)
+# Filter TMT_data to only include proteins found in to_retain
+TMT_data_filtered = TMT_data %>%
+  filter(UniprotAccession %in% to_retain$UniprotAccession)
+
+nrow(TMT_data_filtered) # 6758
+```
+
+6758 proteins have quantification values in at least 70% of the samples.
+
+## Batch normalisation
+
+### Median normalisation
+
+The protein intensities have been normalised via a multi-step process. Intensities were first normalised using the intensity measured for the bridge sample. An additional normalisation step performed by normalising the protein intensities measured for each sample by the global median of the per-sample median protein intensities.
+
+Prepare the data for inspection of the normalisation by reshaping the dataset and extracting relevant information.
+
+```{r}
+# Select relevant data (non-pooled samples)
+toplot = select(TMT_data_filtered, UniprotAccession, A1:J9) %>%
+  # Reshape the data from wide format into long format (each row represents a single observation of a protein in sample)
+  # key="SampleID" means that column names (A1, A1, etc) are gathered into a new column
+  # value="Quant" means the values in those columns are gathered into a new column
+  # -c(UniprotAccession) leaves this column unchanged
+  gather(key="SampleID", value="Quant", -c(UniprotAccession)) %>%
+  # Create a copy of the SampleID column
+  mutate(to_sep = SampleID) %>%
+  # Split the to_sep column into two new columns
+  separate(to_sep, into=c("Batch", "Sample"), sep=1) %>%
+  # Select relevant columns
+  select(UniprotAccession, SampleID, Batch, Quant)
+
+head(toplot)
+```
+
+Plot the distribution of median-normalised protein quantification values per sample, grouped by batch.
+
+```{r}
+ggplot(data = toplot, aes(x=SampleID, y=Quant, color=Batch)) +
+  geom_boxplot() +
+  scale_y_log10() + # Scales y axis using log10 transformation to handle wide ranges in data
+  theme(text=element_text(size=12)) + # Overall text size for plot
+  theme(axis.text.x=element_text(angle=45, hjust=1, size=6)) + # x-axis text
+  xlab("Sample") + # x-axis title
+  ylab("Normalised protein quantification") # y-axis title
+```
+
+The boxplot allows inspection of potential batch effects. If the batches are well-balanced, the distributions should be similar.
+
+Median normalisation has worked well across batches, but the overall distribution of protein quantification values between each sample is quite variable.
+
+### Quantile normalisation
+
+To resolve remaining variability in per-sample protein abundance, apply a full quantile normalisation.
+
+```{r}
+# Create a copy
+TMT_data_filtered_quantile = TMT_data_filtered
+
+library(preprocessCore)
+# Normalise quantification values by standardising the distributions of quantification values across all samples
+TMT_data_filtered_quantile[-c(1:5)] = normalize.quantiles(as.matrix(TMT_data_filtered_quantile[-c(1:5)]))
+
+# Prepare data for plotting
+toplot = select(TMT_data_filtered_quantile, UniprotAccession, UniprotProteinName, A1:J9) %>%
+  gather(key = "SampleID", value = "Quant", -c(UniprotAccession, UniprotProteinName)) %>%
+  mutate(to_sep = SampleID) %>%
+  separate(to_sep, into = c("Batch", "Sample"), sep = 1) %>%
+  select(UniprotAccession, SampleID, Batch, Quant)
+
+# Plot
+ggplot(data = toplot, aes(x=SampleID, y=Quant, color=Batch)) +
+  geom_boxplot() +
+  scale_y_log10() + # Scales y axis using log10 transformation to handle wide ranges in data
+  theme(text=element_text(size=12)) + # Overall text size for plot
+  theme(axis.text.x=element_text(angle=45, hjust=1, size=6)) + # x-axis text
+  xlab("Sample") + # x-axis title
+  ylab("Normalised protein quantification") # y-axis title
+```
+
+The distribution of quantification values across samples are more consistent.
+
+## Filtering for synaptic proteins
+
+As the Syn-PER process is an enrichment and not a purifications step, a second filter was applied to the proteins in the dataset using an inclusion list of 5667 synaptic proteins.
+
+```{r}
+fraction_lists = read_csv("../data/synaptic_inclusion_list.csv")
+
+head(fraction_lists)
+```
