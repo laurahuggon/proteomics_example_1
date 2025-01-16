@@ -47,3 +47,6 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+.DS_Store
+data/
+scripts/1_preprocessing_files/
