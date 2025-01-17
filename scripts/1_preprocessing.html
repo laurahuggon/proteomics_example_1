@@ -107,7 +107,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p><strong>Log transformation:</strong> application of logarithmic transformation to stabilise variance.</p></li>
 <li><p><strong>Missing value handling:</strong> addressing and imputing missing values in the dataset (e.g.&nbsp;impute with low values for missing proteins or remove proteins with high missingness).</p></li>
 <li><p><strong>Batch effect removal:</strong> mitigation of system variation introduced by different experimental batches.</p></li>
-<li><p><strong>Differential expression analysis:</strong> identification and exploration of proteins showing significant expression differences.</p></li>
 </ul>
 </section>
 <section id="data" class="level2">
@@ -77802,21 +77801,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the list output from map() into a simple vector of NA counts</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>NAs <span class="ot">=</span> <span class="fu">unlist</span>(N_Nas)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(NAs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  P17600   Q9H2G2 Q15555-3   Q9NZJ6   Q9UL25   Q7L0J3 
-       0        0        0        0        0        0 </code></pre>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(NAs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q15555-3</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9NZJ6</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q9UL25</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q7L0J3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Transform the results for plotting.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to dataframe</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>NAs <span class="ot">=</span> <span class="fu">as.data.frame</span>(<span class="fu">as.matrix</span>(NAs))</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Move row names into a column and rename columns</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>NAs <span class="ot">=</span> <span class="fu">rownames_to_column</span>(NAs)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(NAs) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"UniprotAccession"</span> ,<span class="st">"NA_count"</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(NAs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to dataframe</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>NAs <span class="ot">=</span> <span class="fu">as.data.frame</span>(<span class="fu">as.matrix</span>(NAs))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Move row names into a column and rename columns</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>NAs <span class="ot">=</span> <span class="fu">rownames_to_column</span>(NAs)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(NAs) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"UniprotAccession"</span> ,<span class="st">"NA_count"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(NAs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -77856,9 +77887,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Plot a histogram showing the distribution of missing data across proteins. For example, a large peak at <code>NA_count = 0</code> indicates many proteins have no missing data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> NAs, <span class="fu">aes</span>(<span class="at">x=</span>NA_count)) <span class="sc">+</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">100</span>, <span class="at">by=</span><span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> NAs, <span class="fu">aes</span>(<span class="at">x=</span>NA_count)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">100</span>, <span class="at">by=</span><span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -77869,17 +77900,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Calculate how many proteins have complete data (no missing values) in this dataset.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate total number of proteins (rows) in the dataset</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>n_total <span class="ot">=</span> <span class="fu">nrow</span>(NAs)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>n_total <span class="co"># 9560 proteins</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate total number of proteins (rows) in the dataset</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>n_total <span class="ot">=</span> <span class="fu">nrow</span>(NAs)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>n_total <span class="co"># 9560 proteins</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 9560</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of proteins (rows) with no missing values</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>n_complete <span class="ot">=</span> <span class="fu">sum</span>(NAs<span class="sc">$</span>NA_count <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>n_complete <span class="co"># 4954 complete proteins</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of proteins (rows) with no missing values</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>n_complete <span class="ot">=</span> <span class="fu">sum</span>(NAs<span class="sc">$</span>NA_count <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>n_complete <span class="co"># 4954 complete proteins</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 4954</code></pre>
 </div>
@@ -77891,17 +77922,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="filtering-missing-data">Filtering missing data</h2>
 <p>Exclude proteins with high missingness - in this case, remove proteins with more than 30% missing values (NAs).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for samples with NA_counts of 30 or less</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>to_retain <span class="ot">=</span> NAs <span class="sc">%&gt;%</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(NA_count <span class="sc">&lt;</span> <span class="dv">31</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace hypens with periods in the UniprotAccession column in TMT_data (to match to_retain)</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>TMT_data<span class="sc">$</span>UniprotAccession <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"-"</span>, <span class="st">"."</span>, TMT_data<span class="sc">$</span>UniprotAccession)</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter TMT_data to only include proteins found in to_retain</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>TMT_data_filtered <span class="ot">=</span> TMT_data <span class="sc">%&gt;%</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(UniprotAccession <span class="sc">%in%</span> to_retain<span class="sc">$</span>UniprotAccession)</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(TMT_data_filtered) <span class="co"># 6758</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for samples with NA_counts of 30 or less</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>to_retain <span class="ot">=</span> NAs <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(NA_count <span class="sc">&lt;</span> <span class="dv">31</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace hypens with periods in the UniprotAccession column in TMT_data (to match to_retain)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>TMT_data<span class="sc">$</span>UniprotAccession <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"-"</span>, <span class="st">"."</span>, TMT_data<span class="sc">$</span>UniprotAccession)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter TMT_data to only include proteins found in to_retain</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>TMT_data_filtered <span class="ot">=</span> TMT_data <span class="sc">%&gt;%</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(UniprotAccession <span class="sc">%in%</span> to_retain<span class="sc">$</span>UniprotAccession)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(TMT_data_filtered) <span class="co"># 6758</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 6758</code></pre>
 </div>
@@ -77915,40 +77946,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The protein intensities have been normalised via a multi-step process. Intensities were first normalised using the intensity measured for the bridge sample. An additional normalisation step performed by normalising the protein intensities measured for each sample by the global median of the per-sample median protein intensities.</p>
 <p>Prepare the data for inspection of the normalisation by reshaping the dataset and extracting relevant information.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select relevant data (non-pooled samples)</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>toplot <span class="ot">=</span> <span class="fu">select</span>(TMT_data_filtered, UniprotAccession, A1<span class="sc">:</span>J9) <span class="sc">%&gt;%</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reshape the data from wide format into long format (each row represents a single observation of a protein in sample)</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># key="SampleID" means that column names (A1, A1, etc) are gathered into a new column</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># value="Quant" means the values in those columns are gathered into a new column</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># -c(UniprotAccession) leaves this column unchanged</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span><span class="st">"SampleID"</span>, <span class="at">value=</span><span class="st">"Quant"</span>, <span class="sc">-</span><span class="fu">c</span>(UniprotAccession)) <span class="sc">%&gt;%</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a copy of the SampleID column</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">to_sep =</span> SampleID) <span class="sc">%&gt;%</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Split the to_sep column into two new columns</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(to_sep, <span class="at">into=</span><span class="fu">c</span>(<span class="st">"Batch"</span>, <span class="st">"Sample"</span>), <span class="at">sep=</span><span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select relevant columns</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, SampleID, Batch, Quant)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(toplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  UniprotAccession SampleID Batch    Quant
-1           P17600       A1     A 446705.4
-2           Q9H2G2       A1     A 650256.9
-3         Q15555.3       A1     A 981100.5
-4           Q9NZJ6       A1     A 957325.4
-5           Q9UL25       A1     A 470853.8
-6           Q7L0J3       A1     A 515817.6</code></pre>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select relevant data (non-pooled samples)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>toplot <span class="ot">=</span> <span class="fu">select</span>(TMT_data_filtered, UniprotAccession, A1<span class="sc">:</span>J9) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reshape the data from wide format into long format (each row represents a single observation of a protein in sample)</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># key="SampleID" means that column names (A1, A1, etc) are gathered into a new column</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># value="Quant" means the values in those columns are gathered into a new column</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># -c(UniprotAccession) leaves this column unchanged</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key=</span><span class="st">"SampleID"</span>, <span class="at">value=</span><span class="st">"Quant"</span>, <span class="sc">-</span><span class="fu">c</span>(UniprotAccession)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a copy of the SampleID column</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">to_sep =</span> SampleID) <span class="sc">%&gt;%</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Split the to_sep column into two new columns</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(to_sep, <span class="at">into=</span><span class="fu">c</span>(<span class="st">"Batch"</span>, <span class="st">"Sample"</span>), <span class="at">sep=</span><span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select relevant columns</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, SampleID, Batch, Quant)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(toplot))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">UniprotAccession</th>
+<th style="text-align: left;">SampleID</th>
+<th style="text-align: left;">Batch</th>
+<th style="text-align: right;">Quant</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">A1</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">446705.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">A1</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">650256.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q15555.3</td>
+<td style="text-align: left;">A1</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">981100.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9NZJ6</td>
+<td style="text-align: left;">A1</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">957325.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q9UL25</td>
+<td style="text-align: left;">A1</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">470853.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q7L0J3</td>
+<td style="text-align: left;">A1</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">515817.6</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Plot the distribution of median-normalised protein quantification values per sample, grouped by batch.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> toplot, <span class="fu">aes</span>(<span class="at">x=</span>SampleID, <span class="at">y=</span>Quant, <span class="at">color=</span>Batch)) <span class="sc">+</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span> <span class="co"># Scales y axis using log10 transformation to handle wide ranges in data</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>)) <span class="sc">+</span> <span class="co"># Overall text size for plot</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>, <span class="at">size=</span><span class="dv">6</span>)) <span class="sc">+</span> <span class="co"># x-axis text</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Sample"</span>) <span class="sc">+</span> <span class="co"># x-axis title</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Normalised protein quantification"</span>) <span class="co"># y-axis title</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> toplot, <span class="fu">aes</span>(<span class="at">x=</span>SampleID, <span class="at">y=</span>Quant, <span class="at">color=</span>Batch)) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span> <span class="co"># Scales y axis using log10 transformation to handle wide ranges in data</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>)) <span class="sc">+</span> <span class="co"># Overall text size for plot</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>, <span class="at">size=</span><span class="dv">6</span>)) <span class="sc">+</span> <span class="co"># x-axis text</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Sample"</span>) <span class="sc">+</span> <span class="co"># x-axis title</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Normalised protein quantification"</span>) <span class="co"># y-axis title</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 29734 rows containing non-finite outside the scale range
 (`stat_boxplot()`).</code></pre>
@@ -77968,28 +78040,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="quantile-normalisation">Quantile normalisation</h3>
 <p>To resolve remaining variability in per-sample protein abundance, apply a full quantile normalisation.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a copy</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>TMT_data_filtered_quantile <span class="ot">=</span> TMT_data_filtered</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(preprocessCore)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalise quantification values by standardising the distributions of quantification values across all samples</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>TMT_data_filtered_quantile[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)] <span class="ot">=</span> <span class="fu">normalize.quantiles</span>(<span class="fu">as.matrix</span>(TMT_data_filtered_quantile[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)]))</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for plotting</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>toplot <span class="ot">=</span> <span class="fu">select</span>(TMT_data_filtered_quantile, UniprotAccession, UniprotProteinName, A1<span class="sc">:</span>J9) <span class="sc">%&gt;%</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">"SampleID"</span>, <span class="at">value =</span> <span class="st">"Quant"</span>, <span class="sc">-</span><span class="fu">c</span>(UniprotAccession, UniprotProteinName)) <span class="sc">%&gt;%</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">to_sep =</span> SampleID) <span class="sc">%&gt;%</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(to_sep, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"Batch"</span>, <span class="st">"Sample"</span>), <span class="at">sep =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, SampleID, Batch, Quant)</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> toplot, <span class="fu">aes</span>(<span class="at">x=</span>SampleID, <span class="at">y=</span>Quant, <span class="at">color=</span>Batch)) <span class="sc">+</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span> <span class="co"># Scales y axis using log10 transformation to handle wide ranges in data</span></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>)) <span class="sc">+</span> <span class="co"># Overall text size for plot</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>, <span class="at">size=</span><span class="dv">6</span>)) <span class="sc">+</span> <span class="co"># x-axis text</span></span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Sample"</span>) <span class="sc">+</span> <span class="co"># x-axis title</span></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Normalised protein quantification"</span>) <span class="co"># y-axis title</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a copy</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>TMT_data_filtered_quantile <span class="ot">=</span> TMT_data_filtered</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(preprocessCore)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalise quantification values by standardising the distributions of quantification values across all samples</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>TMT_data_filtered_quantile[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)] <span class="ot">=</span> <span class="fu">normalize.quantiles</span>(<span class="fu">as.matrix</span>(TMT_data_filtered_quantile[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)]))</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for plotting</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>toplot <span class="ot">=</span> <span class="fu">select</span>(TMT_data_filtered_quantile, UniprotAccession, UniprotProteinName, A1<span class="sc">:</span>J9) <span class="sc">%&gt;%</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">"SampleID"</span>, <span class="at">value =</span> <span class="st">"Quant"</span>, <span class="sc">-</span><span class="fu">c</span>(UniprotAccession, UniprotProteinName)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">to_sep =</span> SampleID) <span class="sc">%&gt;%</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(to_sep, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"Batch"</span>, <span class="st">"Sample"</span>), <span class="at">sep =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, SampleID, Batch, Quant)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> toplot, <span class="fu">aes</span>(<span class="at">x=</span>SampleID, <span class="at">y=</span>Quant, <span class="at">color=</span>Batch)) <span class="sc">+</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span> <span class="co"># Scales y axis using log10 transformation to handle wide ranges in data</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>)) <span class="sc">+</span> <span class="co"># Overall text size for plot</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>, <span class="at">size=</span><span class="dv">6</span>)) <span class="sc">+</span> <span class="co"># x-axis text</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Sample"</span>) <span class="sc">+</span> <span class="co"># x-axis title</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Normalised protein quantification"</span>) <span class="co"># y-axis title</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 29734 rows containing non-finite outside the scale range
 (`stat_boxplot()`).</code></pre>
@@ -78008,8 +78080,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="filtering-for-synaptic-proteins" class="level2">
 <h2 class="anchored" data-anchor-id="filtering-for-synaptic-proteins">Filtering for synaptic proteins</h2>
 <p>As the Syn-PER process is an enrichment and not a purifications step, a second filter was applied to the proteins in the dataset using an inclusion list of 5667 synaptic proteins.</p>
+<p>Load the data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fraction_lists <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"../data/synaptic_inclusion_list.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>fraction_lists <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"../data/synaptic_inclusion_list.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 4934 Columns: 2
 ── Column specification ────────────────────────────────────────────────────────
@@ -78019,18 +78092,1005 @@ chr (2): postsyn_consensus_list, presyn_consensus
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fraction_lists)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  postsyn_consensus_list presyn_consensus
-  &lt;chr&gt;                  &lt;chr&gt;           
-1 DNM1                   AAK1            
-2 ADAM22                 ATP6V0A1        
-3 CAMK2A                 ATP6V1B1        
-4 CDK5                   ATP8A1          
-5 CNTNAP1                CADM1           
-6 DLG2                   DNM3            </code></pre>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(fraction_lists))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">postsyn_consensus_list</th>
+<th style="text-align: left;">presyn_consensus</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">DNM1</td>
+<td style="text-align: left;">AAK1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ADAM22</td>
+<td style="text-align: left;">ATP6V0A1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CAMK2A</td>
+<td style="text-align: left;">ATP6V1B1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CDK5</td>
+<td style="text-align: left;">ATP8A1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CNTNAP1</td>
+<td style="text-align: left;">CADM1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DLG2</td>
+<td style="text-align: left;">DNM3</td>
+</tr>
+</tbody>
+</table>
 </div>
+</div>
+<p>Use the presynaptic and postsynaptic proteins in the list to filter the protein abundance data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract postynaptic proteins</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>postsyn <span class="ot">=</span> <span class="fu">unique</span>(fraction_lists<span class="sc">$</span>postsyn_consensus_list)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract presynaptic proteins</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>presyn <span class="ot">=</span> <span class="fu">unique</span>(fraction_lists<span class="sc">$</span>presyn_consensus)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the normalised data - keep rows where GeneName matches either a name in the postsyn or presyn list</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>TMT_data_synaptic <span class="ot">=</span> TMT_data_filtered_quantile <span class="sc">%&gt;%</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(GeneName <span class="sc">%in%</span> postsyn <span class="sc">|</span> GeneName <span class="sc">%in%</span> presyn)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(TMT_data_synaptic))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 5%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ProteinID</th>
+<th style="text-align: left;">UniprotAccession</th>
+<th style="text-align: left;">UniprotProteinName</th>
+<th style="text-align: left;">GeneName</th>
+<th style="text-align: left;">ProteinDescription</th>
+<th style="text-align: right;">A1</th>
+<th style="text-align: right;">A10</th>
+<th style="text-align: right;">A2</th>
+<th style="text-align: right;">A3</th>
+<th style="text-align: right;">A4</th>
+<th style="text-align: right;">A5</th>
+<th style="text-align: right;">A6</th>
+<th style="text-align: right;">A7</th>
+<th style="text-align: right;">A8</th>
+<th style="text-align: right;">A9</th>
+<th style="text-align: right;">B1</th>
+<th style="text-align: right;">B10</th>
+<th style="text-align: right;">B2</th>
+<th style="text-align: right;">B3</th>
+<th style="text-align: right;">B4</th>
+<th style="text-align: right;">B5</th>
+<th style="text-align: right;">B6</th>
+<th style="text-align: right;">B7</th>
+<th style="text-align: right;">B8</th>
+<th style="text-align: right;">B9</th>
+<th style="text-align: right;">C1</th>
+<th style="text-align: right;">C10</th>
+<th style="text-align: right;">C2</th>
+<th style="text-align: right;">C3</th>
+<th style="text-align: right;">C4</th>
+<th style="text-align: right;">C5</th>
+<th style="text-align: right;">C6</th>
+<th style="text-align: right;">C7</th>
+<th style="text-align: right;">C8</th>
+<th style="text-align: right;">C9</th>
+<th style="text-align: right;">D1</th>
+<th style="text-align: right;">D10</th>
+<th style="text-align: right;">D2</th>
+<th style="text-align: right;">D3</th>
+<th style="text-align: right;">D4</th>
+<th style="text-align: right;">D5</th>
+<th style="text-align: right;">D6</th>
+<th style="text-align: right;">D7</th>
+<th style="text-align: right;">D8</th>
+<th style="text-align: right;">D9</th>
+<th style="text-align: right;">E1</th>
+<th style="text-align: right;">E10</th>
+<th style="text-align: right;">E2</th>
+<th style="text-align: right;">E3</th>
+<th style="text-align: right;">E4</th>
+<th style="text-align: right;">E5</th>
+<th style="text-align: right;">E6</th>
+<th style="text-align: right;">E7</th>
+<th style="text-align: right;">E8</th>
+<th style="text-align: right;">E9</th>
+<th style="text-align: right;">F1</th>
+<th style="text-align: right;">F10</th>
+<th style="text-align: right;">F2</th>
+<th style="text-align: right;">F3</th>
+<th style="text-align: right;">F4</th>
+<th style="text-align: right;">F5</th>
+<th style="text-align: right;">F6</th>
+<th style="text-align: right;">F7</th>
+<th style="text-align: right;">F8</th>
+<th style="text-align: right;">F9</th>
+<th style="text-align: right;">G1</th>
+<th style="text-align: right;">G10</th>
+<th style="text-align: right;">G2</th>
+<th style="text-align: right;">G3</th>
+<th style="text-align: right;">G4</th>
+<th style="text-align: right;">G5</th>
+<th style="text-align: right;">G6</th>
+<th style="text-align: right;">G7</th>
+<th style="text-align: right;">G8</th>
+<th style="text-align: right;">G9</th>
+<th style="text-align: right;">H1</th>
+<th style="text-align: right;">H10</th>
+<th style="text-align: right;">H2</th>
+<th style="text-align: right;">H3</th>
+<th style="text-align: right;">H4</th>
+<th style="text-align: right;">H5</th>
+<th style="text-align: right;">H6</th>
+<th style="text-align: right;">H7</th>
+<th style="text-align: right;">H8</th>
+<th style="text-align: right;">H9</th>
+<th style="text-align: right;">I1</th>
+<th style="text-align: right;">I10</th>
+<th style="text-align: right;">I2</th>
+<th style="text-align: right;">I3</th>
+<th style="text-align: right;">I4</th>
+<th style="text-align: right;">I5</th>
+<th style="text-align: right;">I6</th>
+<th style="text-align: right;">I7</th>
+<th style="text-align: right;">I8</th>
+<th style="text-align: right;">I9</th>
+<th style="text-align: right;">J1</th>
+<th style="text-align: right;">J10</th>
+<th style="text-align: right;">J2</th>
+<th style="text-align: right;">J3</th>
+<th style="text-align: right;">J4</th>
+<th style="text-align: right;">J5</th>
+<th style="text-align: right;">J6</th>
+<th style="text-align: right;">J7</th>
+<th style="text-align: right;">J8</th>
+<th style="text-align: right;">J9</th>
+<th style="text-align: right;">P1</th>
+<th style="text-align: right;">P10</th>
+<th style="text-align: right;">P2</th>
+<th style="text-align: right;">P3</th>
+<th style="text-align: right;">P4</th>
+<th style="text-align: right;">P5</th>
+<th style="text-align: right;">P6</th>
+<th style="text-align: right;">P7</th>
+<th style="text-align: right;">P8</th>
+<th style="text-align: right;">P9</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">sp|P17600|SYN1_HUMAN</td>
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">SYN1_HUMAN</td>
+<td style="text-align: left;">SYN1</td>
+<td style="text-align: left;">Synapsin-1</td>
+<td style="text-align: right;">539795.0</td>
+<td style="text-align: right;">988522.9</td>
+<td style="text-align: right;">826161.3</td>
+<td style="text-align: right;">735093.5</td>
+<td style="text-align: right;">947195.1</td>
+<td style="text-align: right;">804404.1</td>
+<td style="text-align: right;">864199.8</td>
+<td style="text-align: right;">715831.7</td>
+<td style="text-align: right;">921815.0</td>
+<td style="text-align: right;">949318.8</td>
+<td style="text-align: right;">1099004.2</td>
+<td style="text-align: right;">793771.4</td>
+<td style="text-align: right;">656184.0</td>
+<td style="text-align: right;">1285089.9</td>
+<td style="text-align: right;">1014685.8</td>
+<td style="text-align: right;">1049530.2</td>
+<td style="text-align: right;">1146473.7</td>
+<td style="text-align: right;">1354942.6</td>
+<td style="text-align: right;">829021.4</td>
+<td style="text-align: right;">1182372.4</td>
+<td style="text-align: right;">991501.8</td>
+<td style="text-align: right;">548898.9</td>
+<td style="text-align: right;">818229.1</td>
+<td style="text-align: right;">866746.3</td>
+<td style="text-align: right;">802470.4</td>
+<td style="text-align: right;">672236.4</td>
+<td style="text-align: right;">683913.4</td>
+<td style="text-align: right;">940524.3</td>
+<td style="text-align: right;">782464.8</td>
+<td style="text-align: right;">524104.2</td>
+<td style="text-align: right;">782582.2</td>
+<td style="text-align: right;">775851.3</td>
+<td style="text-align: right;">948946.0</td>
+<td style="text-align: right;">730655.2</td>
+<td style="text-align: right;">746872.3</td>
+<td style="text-align: right;">892255.0</td>
+<td style="text-align: right;">764823.7</td>
+<td style="text-align: right;">700782.3</td>
+<td style="text-align: right;">773632.6</td>
+<td style="text-align: right;">888611.2</td>
+<td style="text-align: right;">897617.1</td>
+<td style="text-align: right;">658370.0</td>
+<td style="text-align: right;">926778.6</td>
+<td style="text-align: right;">772872.2</td>
+<td style="text-align: right;">360095.7</td>
+<td style="text-align: right;">697929.2</td>
+<td style="text-align: right;">692623.1</td>
+<td style="text-align: right;">777356.7</td>
+<td style="text-align: right;">1026605.2</td>
+<td style="text-align: right;">700030.7</td>
+<td style="text-align: right;">522983.9</td>
+<td style="text-align: right;">644644.2</td>
+<td style="text-align: right;">565450.7</td>
+<td style="text-align: right;">649254.3</td>
+<td style="text-align: right;">832843.1</td>
+<td style="text-align: right;">539850.6</td>
+<td style="text-align: right;">1111837.2</td>
+<td style="text-align: right;">733086.3</td>
+<td style="text-align: right;">621402.5</td>
+<td style="text-align: right;">635874.7</td>
+<td style="text-align: right;">772042.3</td>
+<td style="text-align: right;">689848.5</td>
+<td style="text-align: right;">797494.2</td>
+<td style="text-align: right;">830144.0</td>
+<td style="text-align: right;">970624.4</td>
+<td style="text-align: right;">582117.1</td>
+<td style="text-align: right;">660475.9</td>
+<td style="text-align: right;">635769.0</td>
+<td style="text-align: right;">727774.8</td>
+<td style="text-align: right;">720730.3</td>
+<td style="text-align: right;">566974.4</td>
+<td style="text-align: right;">842663.1</td>
+<td style="text-align: right;">950050.7</td>
+<td style="text-align: right;">531496.6</td>
+<td style="text-align: right;">846292.1</td>
+<td style="text-align: right;">837033.4</td>
+<td style="text-align: right;">735203.5</td>
+<td style="text-align: right;">964691.0</td>
+<td style="text-align: right;">678739.8</td>
+<td style="text-align: right;">860624.5</td>
+<td style="text-align: right;">1085562.6</td>
+<td style="text-align: right;">676624.1</td>
+<td style="text-align: right;">701973.9</td>
+<td style="text-align: right;">831762.9</td>
+<td style="text-align: right;">769254.0</td>
+<td style="text-align: right;">805950.3</td>
+<td style="text-align: right;">713176.6</td>
+<td style="text-align: right;">909240.6</td>
+<td style="text-align: right;">569758.2</td>
+<td style="text-align: right;">818120.2</td>
+<td style="text-align: right;">844117.5</td>
+<td style="text-align: right;">646077.1</td>
+<td style="text-align: right;">802644.6</td>
+<td style="text-align: right;">853898.4</td>
+<td style="text-align: right;">799612.2</td>
+<td style="text-align: right;">929437.5</td>
+<td style="text-align: right;">1213695.7</td>
+<td style="text-align: right;">536314.1</td>
+<td style="text-align: right;">958345.8</td>
+<td style="text-align: right;">746402.5</td>
+<td style="text-align: right;">993128.6</td>
+<td style="text-align: right;">737673.7</td>
+<td style="text-align: right;">925549.4</td>
+<td style="text-align: right;">1015385.1</td>
+<td style="text-align: right;">797894.4</td>
+<td style="text-align: right;">1007940.0</td>
+<td style="text-align: right;">512239.8</td>
+<td style="text-align: right;">784599.5</td>
+<td style="text-align: right;">848558.8</td>
+<td style="text-align: right;">692242.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sp|Q9H2G2|SLK_HUMAN</td>
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">SLK_HUMAN</td>
+<td style="text-align: left;">SLK</td>
+<td style="text-align: left;">STE20-like serine/threonine-protein kinase</td>
+<td style="text-align: right;">705287.4</td>
+<td style="text-align: right;">752261.2</td>
+<td style="text-align: right;">830110.5</td>
+<td style="text-align: right;">743949.4</td>
+<td style="text-align: right;">1109096.1</td>
+<td style="text-align: right;">713605.2</td>
+<td style="text-align: right;">779564.4</td>
+<td style="text-align: right;">750422.6</td>
+<td style="text-align: right;">980734.9</td>
+<td style="text-align: right;">757351.8</td>
+<td style="text-align: right;">741337.7</td>
+<td style="text-align: right;">809207.6</td>
+<td style="text-align: right;">690220.6</td>
+<td style="text-align: right;">847447.7</td>
+<td style="text-align: right;">773968.4</td>
+<td style="text-align: right;">648012.6</td>
+<td style="text-align: right;">805286.5</td>
+<td style="text-align: right;">961731.0</td>
+<td style="text-align: right;">695081.6</td>
+<td style="text-align: right;">860708.4</td>
+<td style="text-align: right;">782765.6</td>
+<td style="text-align: right;">680468.8</td>
+<td style="text-align: right;">742048.6</td>
+<td style="text-align: right;">769948.0</td>
+<td style="text-align: right;">823280.3</td>
+<td style="text-align: right;">704492.0</td>
+<td style="text-align: right;">715356.2</td>
+<td style="text-align: right;">745807.0</td>
+<td style="text-align: right;">820544.1</td>
+<td style="text-align: right;">580453.6</td>
+<td style="text-align: right;">930460.2</td>
+<td style="text-align: right;">989823.5</td>
+<td style="text-align: right;">901026.2</td>
+<td style="text-align: right;">979445.7</td>
+<td style="text-align: right;">841348.9</td>
+<td style="text-align: right;">997230.7</td>
+<td style="text-align: right;">787190.7</td>
+<td style="text-align: right;">894839.4</td>
+<td style="text-align: right;">751515.7</td>
+<td style="text-align: right;">985452.9</td>
+<td style="text-align: right;">765150.6</td>
+<td style="text-align: right;">766477.2</td>
+<td style="text-align: right;">764829.2</td>
+<td style="text-align: right;">805697.5</td>
+<td style="text-align: right;">855923.8</td>
+<td style="text-align: right;">1036441.4</td>
+<td style="text-align: right;">907931.6</td>
+<td style="text-align: right;">933235.0</td>
+<td style="text-align: right;">818780.5</td>
+<td style="text-align: right;">830722.4</td>
+<td style="text-align: right;">924903.7</td>
+<td style="text-align: right;">812629.5</td>
+<td style="text-align: right;">940526.5</td>
+<td style="text-align: right;">853782.8</td>
+<td style="text-align: right;">1013264.1</td>
+<td style="text-align: right;">864403.7</td>
+<td style="text-align: right;">854686.3</td>
+<td style="text-align: right;">1100396.0</td>
+<td style="text-align: right;">931005.3</td>
+<td style="text-align: right;">723807.7</td>
+<td style="text-align: right;">810629.3</td>
+<td style="text-align: right;">900273.0</td>
+<td style="text-align: right;">997658.8</td>
+<td style="text-align: right;">971126.9</td>
+<td style="text-align: right;">781100.4</td>
+<td style="text-align: right;">894177.1</td>
+<td style="text-align: right;">860490.2</td>
+<td style="text-align: right;">712181.3</td>
+<td style="text-align: right;">788340.0</td>
+<td style="text-align: right;">872211.2</td>
+<td style="text-align: right;">618351.4</td>
+<td style="text-align: right;">724330.9</td>
+<td style="text-align: right;">966469.9</td>
+<td style="text-align: right;">818083.1</td>
+<td style="text-align: right;">673447.6</td>
+<td style="text-align: right;">915286.5</td>
+<td style="text-align: right;">929378.3</td>
+<td style="text-align: right;">871112.1</td>
+<td style="text-align: right;">961987.9</td>
+<td style="text-align: right;">809227.0</td>
+<td style="text-align: right;">701140.8</td>
+<td style="text-align: right;">1062866.3</td>
+<td style="text-align: right;">749520.4</td>
+<td style="text-align: right;">868506.9</td>
+<td style="text-align: right;">726875.9</td>
+<td style="text-align: right;">673869.1</td>
+<td style="text-align: right;">680642.7</td>
+<td style="text-align: right;">667277.8</td>
+<td style="text-align: right;">653084.8</td>
+<td style="text-align: right;">735504.0</td>
+<td style="text-align: right;">726474.6</td>
+<td style="text-align: right;">783569.5</td>
+<td style="text-align: right;">802413.6</td>
+<td style="text-align: right;">746543.8</td>
+<td style="text-align: right;">752327.3</td>
+<td style="text-align: right;">745379.0</td>
+<td style="text-align: right;">789519.1</td>
+<td style="text-align: right;">638508.1</td>
+<td style="text-align: right;">951553.2</td>
+<td style="text-align: right;">910741.1</td>
+<td style="text-align: right;">868095.4</td>
+<td style="text-align: right;">607328.7</td>
+<td style="text-align: right;">847725.9</td>
+<td style="text-align: right;">815495.8</td>
+<td style="text-align: right;">966849.2</td>
+<td style="text-align: right;">808164.0</td>
+<td style="text-align: right;">587689.6</td>
+<td style="text-align: right;">660761.4</td>
+<td style="text-align: right;">986997.5</td>
+<td style="text-align: right;">716237.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sp|Q15555-3|MARE2_HUMAN</td>
+<td style="text-align: left;">Q15555.3</td>
+<td style="text-align: left;">MARE2_HUMAN</td>
+<td style="text-align: left;">MAPRE2</td>
+<td style="text-align: left;">Isoform 3 of Microtubule-associated protein RP/EB family member 2</td>
+<td style="text-align: right;">895816.3</td>
+<td style="text-align: right;">1068774.8</td>
+<td style="text-align: right;">746408.8</td>
+<td style="text-align: right;">471741.7</td>
+<td style="text-align: right;">678017.2</td>
+<td style="text-align: right;">1043137.0</td>
+<td style="text-align: right;">661135.4</td>
+<td style="text-align: right;">765761.3</td>
+<td style="text-align: right;">699067.3</td>
+<td style="text-align: right;">931339.7</td>
+<td style="text-align: right;">890455.8</td>
+<td style="text-align: right;">630669.3</td>
+<td style="text-align: right;">760882.3</td>
+<td style="text-align: right;">882157.3</td>
+<td style="text-align: right;">810305.6</td>
+<td style="text-align: right;">952280.7</td>
+<td style="text-align: right;">809121.0</td>
+<td style="text-align: right;">828131.3</td>
+<td style="text-align: right;">708534.5</td>
+<td style="text-align: right;">828396.6</td>
+<td style="text-align: right;">690800.3</td>
+<td style="text-align: right;">670381.9</td>
+<td style="text-align: right;">715500.4</td>
+<td style="text-align: right;">608202.3</td>
+<td style="text-align: right;">534950.6</td>
+<td style="text-align: right;">1073601.6</td>
+<td style="text-align: right;">832925.2</td>
+<td style="text-align: right;">876099.7</td>
+<td style="text-align: right;">776785.3</td>
+<td style="text-align: right;">720863.7</td>
+<td style="text-align: right;">847690.1</td>
+<td style="text-align: right;">1314718.4</td>
+<td style="text-align: right;">954186.2</td>
+<td style="text-align: right;">444113.6</td>
+<td style="text-align: right;">532631.0</td>
+<td style="text-align: right;">831204.1</td>
+<td style="text-align: right;">700222.1</td>
+<td style="text-align: right;">666774.1</td>
+<td style="text-align: right;">887864.9</td>
+<td style="text-align: right;">877158.4</td>
+<td style="text-align: right;">697976.8</td>
+<td style="text-align: right;">711986.7</td>
+<td style="text-align: right;">900342.2</td>
+<td style="text-align: right;">603628.0</td>
+<td style="text-align: right;">984174.5</td>
+<td style="text-align: right;">795364.9</td>
+<td style="text-align: right;">1122335.6</td>
+<td style="text-align: right;">686499.8</td>
+<td style="text-align: right;">729663.5</td>
+<td style="text-align: right;">792271.6</td>
+<td style="text-align: right;">848253.6</td>
+<td style="text-align: right;">797482.8</td>
+<td style="text-align: right;">1365881.3</td>
+<td style="text-align: right;">1093804.4</td>
+<td style="text-align: right;">828929.7</td>
+<td style="text-align: right;">886753.6</td>
+<td style="text-align: right;">915036.2</td>
+<td style="text-align: right;">517188.9</td>
+<td style="text-align: right;">1127257.4</td>
+<td style="text-align: right;">926615.4</td>
+<td style="text-align: right;">748368.6</td>
+<td style="text-align: right;">1275446.2</td>
+<td style="text-align: right;">882744.2</td>
+<td style="text-align: right;">832262.3</td>
+<td style="text-align: right;">770068.9</td>
+<td style="text-align: right;">1074052.1</td>
+<td style="text-align: right;">899632.6</td>
+<td style="text-align: right;">1344543.9</td>
+<td style="text-align: right;">946866.9</td>
+<td style="text-align: right;">1879636.5</td>
+<td style="text-align: right;">615971.6</td>
+<td style="text-align: right;">667390.7</td>
+<td style="text-align: right;">818282.5</td>
+<td style="text-align: right;">902022.9</td>
+<td style="text-align: right;">728524.4</td>
+<td style="text-align: right;">659217.4</td>
+<td style="text-align: right;">746758.6</td>
+<td style="text-align: right;">762630.8</td>
+<td style="text-align: right;">894103.4</td>
+<td style="text-align: right;">724682.1</td>
+<td style="text-align: right;">689947.9</td>
+<td style="text-align: right;">802799.5</td>
+<td style="text-align: right;">882438.1</td>
+<td style="text-align: right;">927517.0</td>
+<td style="text-align: right;">761104.0</td>
+<td style="text-align: right;">825019.5</td>
+<td style="text-align: right;">995937.4</td>
+<td style="text-align: right;">515623.0</td>
+<td style="text-align: right;">742191.1</td>
+<td style="text-align: right;">1326390.8</td>
+<td style="text-align: right;">850707.1</td>
+<td style="text-align: right;">917930.5</td>
+<td style="text-align: right;">827955.3</td>
+<td style="text-align: right;">581974.0</td>
+<td style="text-align: right;">771973.0</td>
+<td style="text-align: right;">869544.1</td>
+<td style="text-align: right;">865027.1</td>
+<td style="text-align: right;">800293.2</td>
+<td style="text-align: right;">769807.6</td>
+<td style="text-align: right;">780595.0</td>
+<td style="text-align: right;">704096.6</td>
+<td style="text-align: right;">1075064.9</td>
+<td style="text-align: right;">640098.7</td>
+<td style="text-align: right;">818527.3</td>
+<td style="text-align: right;">822120.9</td>
+<td style="text-align: right;">847909.8</td>
+<td style="text-align: right;">869923.8</td>
+<td style="text-align: right;">630774.8</td>
+<td style="text-align: right;">730862.8</td>
+<td style="text-align: right;">741969.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sp|Q9NZJ6|COQ3_HUMAN</td>
+<td style="text-align: left;">Q9NZJ6</td>
+<td style="text-align: left;">COQ3_HUMAN</td>
+<td style="text-align: left;">COQ3</td>
+<td style="text-align: left;">Hexaprenyldihydroxybenzoate methyltransferase, mitochondrial</td>
+<td style="text-align: right;">886244.5</td>
+<td style="text-align: right;">920678.4</td>
+<td style="text-align: right;">932356.1</td>
+<td style="text-align: right;">278730.8</td>
+<td style="text-align: right;">718500.4</td>
+<td style="text-align: right;">850700.5</td>
+<td style="text-align: right;">1104396.0</td>
+<td style="text-align: right;">1093590.8</td>
+<td style="text-align: right;">643759.5</td>
+<td style="text-align: right;">1166113.2</td>
+<td style="text-align: right;">868666.4</td>
+<td style="text-align: right;">1054518.4</td>
+<td style="text-align: right;">1007888.7</td>
+<td style="text-align: right;">774322.2</td>
+<td style="text-align: right;">972940.8</td>
+<td style="text-align: right;">969930.8</td>
+<td style="text-align: right;">485297.7</td>
+<td style="text-align: right;">614372.3</td>
+<td style="text-align: right;">834897.4</td>
+<td style="text-align: right;">704077.8</td>
+<td style="text-align: right;">827705.3</td>
+<td style="text-align: right;">1017388.8</td>
+<td style="text-align: right;">1187719.8</td>
+<td style="text-align: right;">790740.0</td>
+<td style="text-align: right;">1065332.6</td>
+<td style="text-align: right;">836762.0</td>
+<td style="text-align: right;">934983.9</td>
+<td style="text-align: right;">668300.7</td>
+<td style="text-align: right;">452038.8</td>
+<td style="text-align: right;">990324.4</td>
+<td style="text-align: right;">443862.7</td>
+<td style="text-align: right;">749900.7</td>
+<td style="text-align: right;">1450830.4</td>
+<td style="text-align: right;">1027258.9</td>
+<td style="text-align: right;">674653.0</td>
+<td style="text-align: right;">777880.0</td>
+<td style="text-align: right;">700366.1</td>
+<td style="text-align: right;">910641.3</td>
+<td style="text-align: right;">609365.4</td>
+<td style="text-align: right;">834321.9</td>
+<td style="text-align: right;">805816.7</td>
+<td style="text-align: right;">477886.9</td>
+<td style="text-align: right;">571327.7</td>
+<td style="text-align: right;">971668.1</td>
+<td style="text-align: right;">682088.4</td>
+<td style="text-align: right;">812101.4</td>
+<td style="text-align: right;">843165.0</td>
+<td style="text-align: right;">616650.0</td>
+<td style="text-align: right;">705813.8</td>
+<td style="text-align: right;">698809.7</td>
+<td style="text-align: right;">665478.4</td>
+<td style="text-align: right;">858562.4</td>
+<td style="text-align: right;">821667.6</td>
+<td style="text-align: right;">746188.1</td>
+<td style="text-align: right;">664118.8</td>
+<td style="text-align: right;">773194.8</td>
+<td style="text-align: right;">603252.9</td>
+<td style="text-align: right;">770038.2</td>
+<td style="text-align: right;">694419.3</td>
+<td style="text-align: right;">654620.8</td>
+<td style="text-align: right;">958403.7</td>
+<td style="text-align: right;">1486608.1</td>
+<td style="text-align: right;">779352.2</td>
+<td style="text-align: right;">764614.4</td>
+<td style="text-align: right;">894981.0</td>
+<td style="text-align: right;">602039.4</td>
+<td style="text-align: right;">1110081.5</td>
+<td style="text-align: right;">858129.4</td>
+<td style="text-align: right;">1119171.1</td>
+<td style="text-align: right;">1001823.8</td>
+<td style="text-align: right;">896572.5</td>
+<td style="text-align: right;">957584.9</td>
+<td style="text-align: right;">773657.6</td>
+<td style="text-align: right;">827557.9</td>
+<td style="text-align: right;">674996.2</td>
+<td style="text-align: right;">646827.6</td>
+<td style="text-align: right;">522874.8</td>
+<td style="text-align: right;">305820.8</td>
+<td style="text-align: right;">746835.0</td>
+<td style="text-align: right;">781409.5</td>
+<td style="text-align: right;">1009825.6</td>
+<td style="text-align: right;">784431.3</td>
+<td style="text-align: right;">718819.4</td>
+<td style="text-align: right;">686444.9</td>
+<td style="text-align: right;">406197.6</td>
+<td style="text-align: right;">808633.1</td>
+<td style="text-align: right;">848805.8</td>
+<td style="text-align: right;">755479.6</td>
+<td style="text-align: right;">1089389.4</td>
+<td style="text-align: right;">847945.6</td>
+<td style="text-align: right;">793765.6</td>
+<td style="text-align: right;">831014.2</td>
+<td style="text-align: right;">705769.2</td>
+<td style="text-align: right;">283787.3</td>
+<td style="text-align: right;">573540.1</td>
+<td style="text-align: right;">610685.0</td>
+<td style="text-align: right;">739523.7</td>
+<td style="text-align: right;">757333.7</td>
+<td style="text-align: right;">534615.2</td>
+<td style="text-align: right;">676576.2</td>
+<td style="text-align: right;">1184070.1</td>
+<td style="text-align: right;">707836.6</td>
+<td style="text-align: right;">664574.2</td>
+<td style="text-align: right;">846632.3</td>
+<td style="text-align: right;">780920.6</td>
+<td style="text-align: right;">691492.5</td>
+<td style="text-align: right;">824482.4</td>
+<td style="text-align: right;">809838.5</td>
+<td style="text-align: right;">595981.9</td>
+<td style="text-align: right;">691641.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sp|Q9UL25|RAB21_HUMAN</td>
+<td style="text-align: left;">Q9UL25</td>
+<td style="text-align: left;">RAB21_HUMAN</td>
+<td style="text-align: left;">RAB21</td>
+<td style="text-align: left;">Ras-related protein Rab-21</td>
+<td style="text-align: right;">565990.5</td>
+<td style="text-align: right;">1039838.0</td>
+<td style="text-align: right;">821014.7</td>
+<td style="text-align: right;">503093.8</td>
+<td style="text-align: right;">807211.2</td>
+<td style="text-align: right;">1020682.4</td>
+<td style="text-align: right;">771620.5</td>
+<td style="text-align: right;">893317.2</td>
+<td style="text-align: right;">848009.6</td>
+<td style="text-align: right;">1102940.8</td>
+<td style="text-align: right;">1040905.7</td>
+<td style="text-align: right;">555138.3</td>
+<td style="text-align: right;">661367.1</td>
+<td style="text-align: right;">620397.7</td>
+<td style="text-align: right;">544512.9</td>
+<td style="text-align: right;">1148893.9</td>
+<td style="text-align: right;">871312.7</td>
+<td style="text-align: right;">890586.0</td>
+<td style="text-align: right;">571688.8</td>
+<td style="text-align: right;">473960.0</td>
+<td style="text-align: right;">637368.0</td>
+<td style="text-align: right;">819230.9</td>
+<td style="text-align: right;">808354.3</td>
+<td style="text-align: right;">828693.7</td>
+<td style="text-align: right;">569021.7</td>
+<td style="text-align: right;">959842.0</td>
+<td style="text-align: right;">907606.0</td>
+<td style="text-align: right;">860422.4</td>
+<td style="text-align: right;">932168.7</td>
+<td style="text-align: right;">854657.1</td>
+<td style="text-align: right;">969289.5</td>
+<td style="text-align: right;">710247.4</td>
+<td style="text-align: right;">670374.9</td>
+<td style="text-align: right;">1403117.0</td>
+<td style="text-align: right;">1337361.2</td>
+<td style="text-align: right;">643381.2</td>
+<td style="text-align: right;">751844.3</td>
+<td style="text-align: right;">982824.1</td>
+<td style="text-align: right;">745702.5</td>
+<td style="text-align: right;">681380.3</td>
+<td style="text-align: right;">839051.3</td>
+<td style="text-align: right;">687939.3</td>
+<td style="text-align: right;">689887.7</td>
+<td style="text-align: right;">810121.9</td>
+<td style="text-align: right;">867028.5</td>
+<td style="text-align: right;">641743.0</td>
+<td style="text-align: right;">650892.9</td>
+<td style="text-align: right;">705889.8</td>
+<td style="text-align: right;">770789.4</td>
+<td style="text-align: right;">1164724.6</td>
+<td style="text-align: right;">706103.3</td>
+<td style="text-align: right;">619554.1</td>
+<td style="text-align: right;">828828.1</td>
+<td style="text-align: right;">854697.3</td>
+<td style="text-align: right;">662867.6</td>
+<td style="text-align: right;">926187.4</td>
+<td style="text-align: right;">1049290.5</td>
+<td style="text-align: right;">1626720.5</td>
+<td style="text-align: right;">662342.5</td>
+<td style="text-align: right;">905582.6</td>
+<td style="text-align: right;">750508.0</td>
+<td style="text-align: right;">1071377.2</td>
+<td style="text-align: right;">689363.0</td>
+<td style="text-align: right;">607791.0</td>
+<td style="text-align: right;">1279428.0</td>
+<td style="text-align: right;">615652.6</td>
+<td style="text-align: right;">724091.3</td>
+<td style="text-align: right;">1115857.3</td>
+<td style="text-align: right;">712780.8</td>
+<td style="text-align: right;">1066150.8</td>
+<td style="text-align: right;">744059.6</td>
+<td style="text-align: right;">773916.7</td>
+<td style="text-align: right;">808065.3</td>
+<td style="text-align: right;">974358.6</td>
+<td style="text-align: right;">806664.5</td>
+<td style="text-align: right;">821067.0</td>
+<td style="text-align: right;">936076.0</td>
+<td style="text-align: right;">697343.4</td>
+<td style="text-align: right;">787954.5</td>
+<td style="text-align: right;">780330.5</td>
+<td style="text-align: right;">1055979.4</td>
+<td style="text-align: right;">1023058.4</td>
+<td style="text-align: right;">782330.9</td>
+<td style="text-align: right;">734723.6</td>
+<td style="text-align: right;">731341.7</td>
+<td style="text-align: right;">855998.7</td>
+<td style="text-align: right;">816425.6</td>
+<td style="text-align: right;">484270.8</td>
+<td style="text-align: right;">941499.2</td>
+<td style="text-align: right;">426384.3</td>
+<td style="text-align: right;">788409.4</td>
+<td style="text-align: right;">744281.5</td>
+<td style="text-align: right;">602980.1</td>
+<td style="text-align: right;">602448.7</td>
+<td style="text-align: right;">910678.6</td>
+<td style="text-align: right;">807277.4</td>
+<td style="text-align: right;">1198062.5</td>
+<td style="text-align: right;">871191.7</td>
+<td style="text-align: right;">694010.4</td>
+<td style="text-align: right;">385037.8</td>
+<td style="text-align: right;">683560.2</td>
+<td style="text-align: right;">1151658.3</td>
+<td style="text-align: right;">1037565.4</td>
+<td style="text-align: right;">1075267.3</td>
+<td style="text-align: right;">659301.6</td>
+<td style="text-align: right;">551264.9</td>
+<td style="text-align: right;">1109431.6</td>
+<td style="text-align: right;">875296.7</td>
+<td style="text-align: right;">736722.9</td>
+<td style="text-align: right;">595166.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sp|Q7L0J3|SV2A_HUMAN</td>
+<td style="text-align: left;">Q7L0J3</td>
+<td style="text-align: left;">SV2A_HUMAN</td>
+<td style="text-align: left;">SV2A</td>
+<td style="text-align: left;">Synaptic vesicle glycoprotein 2A</td>
+<td style="text-align: right;">605032.1</td>
+<td style="text-align: right;">529404.5</td>
+<td style="text-align: right;">396772.8</td>
+<td style="text-align: right;">667721.9</td>
+<td style="text-align: right;">1077956.3</td>
+<td style="text-align: right;">472247.9</td>
+<td style="text-align: right;">980368.7</td>
+<td style="text-align: right;">780934.6</td>
+<td style="text-align: right;">1054529.8</td>
+<td style="text-align: right;">449007.4</td>
+<td style="text-align: right;">587274.6</td>
+<td style="text-align: right;">765489.7</td>
+<td style="text-align: right;">725961.6</td>
+<td style="text-align: right;">908583.9</td>
+<td style="text-align: right;">764498.9</td>
+<td style="text-align: right;">769368.3</td>
+<td style="text-align: right;">505711.8</td>
+<td style="text-align: right;">577629.5</td>
+<td style="text-align: right;">812045.4</td>
+<td style="text-align: right;">966521.9</td>
+<td style="text-align: right;">892892.7</td>
+<td style="text-align: right;">767103.5</td>
+<td style="text-align: right;">695061.5</td>
+<td style="text-align: right;">1073084.8</td>
+<td style="text-align: right;">914672.4</td>
+<td style="text-align: right;">347990.0</td>
+<td style="text-align: right;">583442.4</td>
+<td style="text-align: right;">714542.5</td>
+<td style="text-align: right;">439915.5</td>
+<td style="text-align: right;">622041.6</td>
+<td style="text-align: right;">854794.5</td>
+<td style="text-align: right;">500174.9</td>
+<td style="text-align: right;">1139557.4</td>
+<td style="text-align: right;">724561.0</td>
+<td style="text-align: right;">773471.0</td>
+<td style="text-align: right;">1005890.9</td>
+<td style="text-align: right;">923337.1</td>
+<td style="text-align: right;">2093971.1</td>
+<td style="text-align: right;">467533.9</td>
+<td style="text-align: right;">1037411.9</td>
+<td style="text-align: right;">1063734.3</td>
+<td style="text-align: right;">696503.9</td>
+<td style="text-align: right;">1464560.6</td>
+<td style="text-align: right;">977186.7</td>
+<td style="text-align: right;">506107.4</td>
+<td style="text-align: right;">784925.4</td>
+<td style="text-align: right;">760718.3</td>
+<td style="text-align: right;">1144453.2</td>
+<td style="text-align: right;">1094260.0</td>
+<td style="text-align: right;">558542.1</td>
+<td style="text-align: right;">664517.0</td>
+<td style="text-align: right;">756033.7</td>
+<td style="text-align: right;">801403.4</td>
+<td style="text-align: right;">733504.3</td>
+<td style="text-align: right;">1212152.1</td>
+<td style="text-align: right;">656813.4</td>
+<td style="text-align: right;">612105.2</td>
+<td style="text-align: right;">712293.7</td>
+<td style="text-align: right;">987066.5</td>
+<td style="text-align: right;">601007.8</td>
+<td style="text-align: right;">781091.9</td>
+<td style="text-align: right;">1034384.7</td>
+<td style="text-align: right;">976581.9</td>
+<td style="text-align: right;">942574.7</td>
+<td style="text-align: right;">726488.7</td>
+<td style="text-align: right;">769994.9</td>
+<td style="text-align: right;">887106.5</td>
+<td style="text-align: right;">787522.2</td>
+<td style="text-align: right;">942480.6</td>
+<td style="text-align: right;">983443.7</td>
+<td style="text-align: right;">798903.9</td>
+<td style="text-align: right;">830714.0</td>
+<td style="text-align: right;">1235150.7</td>
+<td style="text-align: right;">531196.3</td>
+<td style="text-align: right;">1131349.5</td>
+<td style="text-align: right;">824552.5</td>
+<td style="text-align: right;">770266.0</td>
+<td style="text-align: right;">819668.1</td>
+<td style="text-align: right;">818039.8</td>
+<td style="text-align: right;">670904.0</td>
+<td style="text-align: right;">1637934.3</td>
+<td style="text-align: right;">975116.6</td>
+<td style="text-align: right;">634723.1</td>
+<td style="text-align: right;">503740.2</td>
+<td style="text-align: right;">862331.9</td>
+<td style="text-align: right;">483289.6</td>
+<td style="text-align: right;">582229.7</td>
+<td style="text-align: right;">1119007.3</td>
+<td style="text-align: right;">683025.7</td>
+<td style="text-align: right;">786938.3</td>
+<td style="text-align: right;">893424.9</td>
+<td style="text-align: right;">771325.1</td>
+<td style="text-align: right;">863551.5</td>
+<td style="text-align: right;">805011.1</td>
+<td style="text-align: right;">1056448.0</td>
+<td style="text-align: right;">592653.5</td>
+<td style="text-align: right;">726227.4</td>
+<td style="text-align: right;">961590.8</td>
+<td style="text-align: right;">474243.8</td>
+<td style="text-align: right;">945749.8</td>
+<td style="text-align: right;">889297.0</td>
+<td style="text-align: right;">823758.8</td>
+<td style="text-align: right;">845695.4</td>
+<td style="text-align: right;">709423.7</td>
+<td style="text-align: right;">699842.5</td>
+<td style="text-align: right;">1089449.6</td>
+<td style="text-align: right;">694812.1</td>
+<td style="text-align: right;">796305.0</td>
+<td style="text-align: right;">1072027.1</td>
+<td style="text-align: right;">823218.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Export files.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(TMT_data_synaptic, <span class="st">"../outs/TMT_data_synaptic.csv"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(TMT_data_filtered_quantile, <span class="st">"../outs/TMT_data_filtered_quantile.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
