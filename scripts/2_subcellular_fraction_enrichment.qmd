@@ -1,0 +1,209 @@
+---
+title: "2. Subcellular Fraction Enrichment"
+format: html
+editor: visual
+---
+
+## Data
+
+The data used in this example has been taken from ([Carlyle et al., 2021](https://www.sciencedirect.com/science/article/pii/S0197458021001275?via%3Dihub#sec0002)).
+
+This paper used multiplexed liquid chromatography mass-spectrometry to quantify enriched synaptic proteins from the parietal association cortex of 100 subjects with contrasting levels of AD pathology and cognitive performance.
+
+This file is used to assess protein enrichment across organelle subcellular compartments.
+
+### Load libraries
+
+```{r, results="hide", message=FALSE}
+library(tidyverse)
+```
+
+### Load data
+
+Import the file containing the normalised TMT data (not synaptic filtered).
+
+```{r}
+TMT_data_filtered_quantile = read_csv("../outs/TMT_data_filtered_quantile.csv")
+
+knitr::kable(head(TMT_data_filtered_quantile))
+```
+
+Import the file containing the putative organelle gene list (created by this author).
+
+```{r}
+organelle_protein_list = read_csv("../data/unique_protein_organelle_protein_lists.csv")
+
+knitr::kable(head(organelle_protein_list))
+```
+
+Import the file containing a reference dataset of all human genes and associated protein identifiers. This will be used to calculate enrichment relative to the total number of human proteins.
+
+```{r}
+human_ref = read_tsv("../data/Human_reference_biomart.txt")
+
+knitr::kable(head(human_ref))
+```
+
+## Count table
+
+Prepare a count table that
+
+Find the number of unique proteins in the human reference.
+
+```{r}
+# Find number of unique gene names in reference
+n_ref = length(unique(human_ref$`Gene name`))
+n_ref # 20,635 unique genes
+```
+
+Count the number of proteins in the organelle list.
+
+```{r}
+# Reshape the dataset from wide to long
+tmp = organelle_protein_list %>%
+  gather(key=organelle, value=gene)
+
+head(tmp)
+```
+
+```{r}
+# Count the number of proteins per organelle
+n_proteins = tmp %>%
+  filter(!is.na(gene)) %>% # Remove rows where gene is NA
+  group_by(organelle) %>%
+  summarise(n_proteins=n())
+
+n_proteins = n_proteins %>%
+  arrange(tolower(organelle))
+
+n_proteins
+```
+
+Construct the count table.
+
+```{r}
+# Convert to dataframe
+n_proteins = as.data.frame(n_proteins)
+
+# Extract the unique gene names prsent in the TMT dataset
+TMT_data_ref = unique(TMT_data_filtered_quantile$GeneName)
+# Find the number of unique proteins in the TMT dataset
+in_TMT = length(unique(TMT_data_ref)) # 6567 proteins
+
+# Count the number of proteins from the TMT dataset that are found in each organelle list
+in_cytoplasm = sum(TMT_data_ref %in% organelle_protein_list$cytoplasm_consensus)
+in_cytoskeleton = sum(TMT_data_ref %in% organelle_protein_list$cytoskeleton_consensus)
+in_ER = sum(TMT_data_ref %in% organelle_protein_list$ER_consensus)
+in_golgi = sum(TMT_data_ref %in% organelle_protein_list$Golgi_consensus)
+in_mito = sum(TMT_data_ref %in% organelle_protein_list$mito_consensus)
+in_nucleus = sum(TMT_data_ref %in% organelle_protein_list$nucleus_consensus)
+in_postsyn = sum(TMT_data_ref %in% organelle_protein_list$postsyn_consensus_list)
+in_presyn = sum(TMT_data_ref %in% organelle_protein_list$presyn_consensus)
+
+# Construct table with columns:
+# organelle: names of organelles
+# n_protein: total number of proteins associated with each organelle
+# in_set: number of proteins in the TMT dataset that overlap with each organelle list
+# test n_protein = number of proteins in the human reference
+# test in_set = number of proteins in the TMT dataset
+organelle_count_table = tibble(
+  organelle = c("test", "cytoplasm", "cytoskeleton", "ER", "golgi", "mitochondria", "nucleus", "postsynapse", "presynapse"), 
+  n_protein = c(n_ref, n_proteins[1,2], n_proteins[2,2], n_proteins[3,2], n_proteins[4,2], n_proteins[5,2], n_proteins[6,2], n_proteins[7,2], n_proteins[8,2]), 
+  in_set = c(in_TMT, in_cytoplasm, in_cytoskeleton, in_ER, in_golgi, in_mito, in_nucleus, in_postsyn, in_presyn))
+
+organelle_count_table
+```
+
+## Fold enrichment
+
+Calculate proportion of proteins overlapping between the TMT dataset and the organelle-specific protein list as a percentage.
+
+Calculate the fold enrichment of organelle proteins in the TMT dataset by normalising to the "background" proportion (`test`).
+
+The `test` proportion is the proportion of all proteins in the TMT dataset relative to the total human reference proteins i.e. it tells us what fraction of all human proteins are represented in the TMT dataset. It essentially serves as a baseline or background proportion that reflects how well the TMT dataset covers the entire human proteome.
+
+Different organelles have varying sizes of protein lists. To compare enrichment across organelles, we need to account for the overall sampling bias in the TMT dataset - in other words, how well the TMT dataset respresents the human proteome as a whole.
+
+By dividing each organelle's proportion by the `test` proportion, we normalise the enrichment calculation to this baseline. This adjustment helps identify whether an organelle's proteins are overrepresented or underrepresented compared to the overall coverage of the TMT dataset.
+
+Without this normalisation, you couldn't distinguish whether an organelle's enrichment is due to biological significance or a general sampling bias.
+
+```{r}
+organelle_count_table = organelle_count_table %>%
+  mutate(proportion = (in_set/n_protein)*100) %>%
+  mutate(fold_enrichment = proportion/proportion[organelle=="test"])
+
+organelle_count_table
+```
+
+Perform Fisher's exact tests to determine whether the observed proportion of TMT-detected proteins in each organelle is statistically different from the proportion in the overall dataset.
+
+```{r}
+# Initialise a placeholder variable
+fisher_test_t = "NA"
+
+# Perform Fisher's exact tests for each organelle
+# c(1,2) selects the "test" (total dataset) and "cytoplasm" row
+# 2:3 selects the second (n_protein) and third (in_set) columns
+# Extract the p-value
+fisher_cytoplasm = fisher.test(organelle_count_table[c(1,2),2:3])$`p.value`
+fisher_cytoskelton = fisher.test(organelle_count_table[c(1,3),2:3])$`p.value`
+fisher_ER = fisher.test(organelle_count_table[c(1,4),2:3])$`p.value`
+fisher_golgi = fisher.test(organelle_count_table[c(1,5),2:3])$`p.value`
+fisher_mitochondria = fisher.test(organelle_count_table[c(1,6),2:3])$`p.value`
+fisher_nucleus = fisher.test(organelle_count_table[c(1,7),2:3])$`p.value`
+fisher_postsynapse = fisher.test(organelle_count_table[c(1,8),2:3])$`p.value`
+fisher_presynapse = fisher.test(organelle_count_table[c(1,9),2:3])$`p.value`
+
+# Combine all p=values into a numeric vector and add as a new column to the count table
+organelle_count_table$p.value = as.numeric(c(fisher_test_t, fisher_cytoplasm, fisher_cytoskelton, fisher_ER, fisher_golgi, fisher_mitochondria, fisher_nucleus, fisher_postsynapse, fisher_presynapse))
+
+organelle_count_table
+```
+
+Correct for multiple comparisons using the Bonferroni method.
+
+```{r}
+# Apply Bonferroni correction to adjust p-values for multiple comparisons (p.adj)
+organelle_count_table$p.adj = p.adjust(organelle_count_table$p.value, method = "bonferroni")
+
+organelle_count_table
+```
+
+Determine direction of enrichment and if significant.
+
+```{r}
+# Protein is enriched in TMT dataset if fold enrichment is greater than 1
+organelle_count_table$direction = ifelse(organelle_count_table$fold_enrichment > 1, "Enriched", "Depleted")
+# p.adj is significant if less than 0.05
+organelle_count_table = organelle_count_table %>%
+  mutate(significance = case_when(
+    p.adj <= 0.001 ~ "***",
+    p.adj <= 0.01 ~ "**",
+    p.adj <= 0.05 ~ "*",
+    TRUE ~ ""))
+  
+# Filter out test row
+organelle_count_table = organelle_count_table %>%
+  filter(organelle != "test")
+
+organelle_count_table
+```
+
+Plot results.
+
+```{r}
+max_y_value = max(organelle_count_table$fold_enrichment)
+upper_limit = max_y_value * 1.20  # 20% buffer above the max value
+
+ggplot(data = organelle_count_table, aes(x=organelle, y=fold_enrichment, fill=direction)) +
+  geom_col() +
+  geom_hline(yintercept=1, linetype="dashed", color="black", size=0.3) +
+  theme_bw() +
+  theme(axis.text.x=element_text(angle=45, hjust=1)) +
+  ylab("Fold enrichment") +
+  xlab("Subcellular fraction") +
+  scale_fill_manual(values = c("Enriched"="darkgreen", "Depleted"="darkred")) +
+  geom_text(aes(label=significance), vjust=-0.4, size=5) +
+  scale_y_continuous(limits = c(0, upper_limit), expand = c(0, 0))
+```
