@@ -22,8 +22,6 @@ Generally, the preprocessing workflow for proteomics data encompasses several ke
 
 -   **Batch effect removal:** mitigation of system variation introduced by different experimental batches.
 
--   **Differential expression analysis:** identification and exploration of proteins showing significant expression differences.
-
 ## Data
 
 The data used in this example has been taken from ([Carlyle et al., 2021](https://www.sciencedirect.com/science/article/pii/S0197458021001275?via%3Dihub#sec0002)).
@@ -84,7 +82,7 @@ N_Nas = map(to_count, ~sum(is.na(.)))
 # Convert the list output from map() into a simple vector of NA counts
 NAs = unlist(N_Nas)
 
-head(NAs)
+knitr::kable(head(NAs))
 ```
 
 Transform the results for plotting.
@@ -166,7 +164,7 @@ toplot = select(TMT_data_filtered, UniprotAccession, A1:J9) %>%
   # Select relevant columns
   select(UniprotAccession, SampleID, Batch, Quant)
 
-head(toplot)
+knitr::kable(head(toplot))
 ```
 
 Plot the distribution of median-normalised protein quantification values per sample, grouped by batch.
@@ -220,8 +218,32 @@ The distribution of quantification values across samples are more consistent.
 
 As the Syn-PER process is an enrichment and not a purifications step, a second filter was applied to the proteins in the dataset using an inclusion list of 5667 synaptic proteins.
 
+Load the data.
+
 ```{r}
 fraction_lists = read_csv("../data/synaptic_inclusion_list.csv")
 
-head(fraction_lists)
+knitr::kable(head(fraction_lists))
+```
+
+Use the presynaptic and postsynaptic proteins in the list to filter the protein abundance data.
+
+```{r}
+# Extract postynaptic proteins
+postsyn = unique(fraction_lists$postsyn_consensus_list)
+# Extract presynaptic proteins
+presyn = unique(fraction_lists$presyn_consensus)
+
+# Filter the normalised data - keep rows where GeneName matches either a name in the postsyn or presyn list
+TMT_data_synaptic = TMT_data_filtered_quantile %>%
+  filter(GeneName %in% postsyn | GeneName %in% presyn)
+
+knitr::kable(head(TMT_data_synaptic))
+```
+
+Export files.
+
+```{r}
+write_csv(TMT_data_synaptic, "../outs/TMT_data_synaptic.csv")
+write_csv(TMT_data_filtered_quantile, "../outs/TMT_data_filtered_quantile.csv")
 ```
