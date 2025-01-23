@@ -16,11 +16,11 @@ Generally, the preprocessing workflow for proteomics data encompasses several ke
 
 -   **Normalisation:** normalise data to correct for technical variability (e.g. total ion current, median normalisation).
 
+-   **Batch effect removal:** mitigation of system variation introduced by different experimental batches.
+
 -   **Log transformation:** application of logarithmic transformation to stabilise variance.
 
 -   **Missing value handling:** addressing and imputing missing values in the dataset (e.g. impute with low values for missing proteins or remove proteins with high missingness).
-
--   **Batch effect removal:** mitigation of system variation introduced by different experimental batches.
 
 ## Data
 
@@ -36,11 +36,12 @@ The protein intensities have been normalised via a multi-step process. Intensiti
 library(tidyverse)
 library(openxlsx)
 library(broom)
+library(gridExtra)
 ```
 
 ### Load TMT data
 
-Import the file containing the median-normalised protein quantification data. Each value in the columns represents the abundance of each protein in each sample.
+Import the file containing the median-normalised protein quantification data. The observations are signal intensity measurements from the mass spectrometer, and these intensities relate to the amount of protein.
 
 ```{r}
 TMT_data = read.xlsx("../data/Table_S3_Carlyle_TMT_synaptosomes_quants.xlsx", rowNames = FALSE)
@@ -56,7 +57,175 @@ knitr::kable(head(sample_key))
 
 ### Exploratory data analysis
 
-Inspect the missingness of the TMT dataset by counting the number of NAs in every non-pool sample.
+#### Log-transformation?
+
+Check if the data will need to be log-transformed.
+
+Data should be log-transformed if it:
+
+-   Is right-skewed (not normally distributed).
+
+    -   Proteomics data is often right-skewed because a small number of proteins have very high abundance and most proteins are low in abundance.
+
+    -   Many statistical methods (e.g. linear regression and t-tests) assume normal distribution.
+
+-   Contains large ranges.
+
+    -   Proteomics data often spans several orders of magnitude, where some proteins have extremely high abundances, while many others are low in abundance.
+
+    -   Log-transformation compresses the dynamic range of the data.
+
+-   Shows mean-variance dependence.
+
+    -   Without log-transformation, high abundance proteins can dominate the analysis because their variance is larger.
+
+    -   Log-transformation compresses the dynamic range of the data, stabilising variance.
+
+-   Contains extreme values.
+
+    -   Extreme values (outliers) can skew statistical analyses.
+
+    -   Log-transformation reduces their impact by shrinking large values.
+
+Create a dataframe of raw and log2-transformed data.
+
+```{r}
+# Select relevant data (non-pooled samples)
+to_plot = select(TMT_data, UniprotAccession, A1:J9) %>%
+  # Reshape the data from wide format into long format (each row represents a single observation of a protein in sample)
+  # key="SampleID" means that column names (A1, A1, etc) are gathered into a new column
+  # value="Quant" means the values in those columns are gathered into a new column
+  # -c(UniprotAccession) leaves this column unchanged
+  gather(key="SampleID", value="Quant", -c(UniprotAccession)) %>%
+  # Create a copy of the SampleID column
+  mutate(to_sep = SampleID) %>%
+  # Select relevant columns
+  select(UniprotAccession, SampleID, Quant)
+
+# Log2 transformation
+to_plot = to_plot %>%
+  mutate(TransformQuant = log2(Quant))
+
+knitr::kable(head(to_plot))
+```
+
+Create plot theme.
+
+```{r}
+my_theme = function() {
+  theme_minimal() +
+    theme(axis.line = element_line(colour = "black"),  # Add axis lines
+          axis.ticks = element_line(colour = "black"),  # Add axis ticks
+          plot.title = element_text(face = "bold", hjust=0.5), # Adjust plot title
+          axis.title.y = element_text(margin = margin(r = 15), # Adjust y-axis title position
+                                      size = 13), # Adjust y-axis title size
+          axis.text.x = element_text(size = 10), # Increase x-axis text size
+          axis.text.y = element_text(size = 10) # Increase y-axis text size
+    ) 
+}
+```
+
+Check for right skewness.
+
+```{r, message=FALSE}
+# Plot distribution of raw data using density plot
+ggplot(to_plot, aes(x=Quant)) +
+  geom_density() +
+  labs(title="Raw Data") +
+  my_theme()
+
+# Plot distribution of transformed data using density
+ggplot(to_plot, aes(x=TransformQuant)) +
+  geom_density() +
+  labs(title="Transformed Data") +
+  my_theme()
+```
+
+Before transformation, proteomics data have a highly skewed distribution with a long right tail.
+
+After transformation, the data should look more symmetric and less skewed.
+
+Check for large spread between minimum and maximum values, and possible outliers.
+
+```{r, message=FALSE}
+# Boxplot
+ggplot(to_plot, aes(x=UniprotAccession, y=Quant)) +
+  geom_boxplot() +
+  labs(title="Raw Data") +
+  my_theme() +
+  theme(axis.text.x = element_blank())
+
+# Boxplot
+ggplot(to_plot, aes(x=UniprotAccession, y=TransformQuant)) +
+  geom_boxplot() +
+  labs(title="Transformed Data") +
+  my_theme() +
+  theme(axis.text.x = element_blank())
+```
+
+Before transformation, there may be a large spread between the minimum and maximum values, and possible outliers.
+
+After log-transformation, the spread should be more compressed, and outliers may be less extreme.
+
+Use a Q-Q plot to compare the distribution of your data to normal distribution.
+
+```{r}
+# Q-Q plot of raw data
+qqnorm(to_plot$Quant)
+qqline(to_plot$Quant, col="red")
+
+# Q-Q plot of transformed data
+qqnorm(to_plot$TransformQuant)
+qqline(to_plot$TransformQuant, col="red")
+```
+
+Before transformation, the raw data will deviate significantly from the normal distribution, especially in the right tail.
+
+After transformation, the data should show improve alignment with the normal distribution.
+
+Check the mean-variance relationship. In proteomics data, variance typically increases with the mean intensity (i.e. the more abundant proteins show more variance).
+
+```{r}
+to_plot_mean_var = to_plot %>%
+  group_by(UniprotAccession) %>%
+  summarise(
+    mean = mean(Quant, na.rm = TRUE),
+    var = var(Quant, na.rm = TRUE)
+  )
+
+knitr::kable(head(to_plot_mean_var))
+```
+
+```{r}
+# Plot mean vs variance for raw data
+ggplot(to_plot_mean_var, aes(x=mean, y=var)) +
+  geom_point(alpha=0.2) +
+  labs(title="Raw Data") +
+  my_theme()
+```
+
+```{r}
+to_plot_mean_var = to_plot %>%
+  group_by(UniprotAccession) %>%
+  summarise(
+    mean = mean(TransformQuant, na.rm = TRUE),
+    var = var(TransformQuant, na.rm = TRUE)
+  )
+
+# Plot mean vs variance for transformed data
+ggplot(to_plot_mean_var, aes(x=mean, y=var)) +
+  geom_point(alpha=0.2) +
+  labs(title="Transformed Data") +
+  my_theme()
+```
+
+Log-transformation should stabilise the mean-variance relationship.
+
+Overall, this data benefits from log-transformation as it improves normality and reduces skewness.
+
+#### Missingness?
+
+Inspect the missingness of the TMT dataset by counting the number of `NA`s in every non-pooled sample.
 
 ```{r}
 # Select relevant data (non-pooled samples)
@@ -102,7 +271,8 @@ Plot a histogram showing the distribution of missing data across proteins. For e
 ```{r}
 ggplot(data = NAs, aes(x=NA_count)) +
   geom_histogram(binwidth = 1) +
-  scale_x_continuous(breaks=seq(0,100, by=10))
+  scale_x_continuous(breaks=seq(0,100, by=10)) +
+  my_theme()
 ```
 
 Calculate how many proteins have complete data (no missing values) in this dataset.
@@ -173,6 +343,7 @@ Plot the distribution of median-normalised protein quantification values per sam
 ggplot(data = toplot, aes(x=SampleID, y=Quant, color=Batch)) +
   geom_boxplot() +
   scale_y_log10() + # Scales y axis using log10 transformation to handle wide ranges in data
+  my_theme() +
   theme(text=element_text(size=12)) + # Overall text size for plot
   theme(axis.text.x=element_text(angle=45, hjust=1, size=6)) + # x-axis text
   xlab("Sample") + # x-axis title
@@ -206,6 +377,7 @@ toplot = select(TMT_data_filtered_quantile, UniprotAccession, UniprotProteinName
 ggplot(data = toplot, aes(x=SampleID, y=Quant, color=Batch)) +
   geom_boxplot() +
   scale_y_log10() + # Scales y axis using log10 transformation to handle wide ranges in data
+  my_theme() +
   theme(text=element_text(size=12)) + # Overall text size for plot
   theme(axis.text.x=element_text(angle=45, hjust=1, size=6)) + # x-axis text
   xlab("Sample") + # x-axis title
