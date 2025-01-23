@@ -57,6 +57,90 @@ knitr::kable(head(sample_key))
 
 ### Exploratory data analysis
 
+#### Missingness?
+
+Inspect the missingness of the TMT dataset by counting the number of `NA`s in every non-pooled sample.
+
+```{r}
+# Select relevant data (non-pooled samples)
+to_count = select(TMT_data, UniprotAccession, A1:J9)
+# Assign protein names from UniprotAccession to colnames variable
+colnames = to_count$UniprotAccession
+# Transpose the dataset - makes proteins the columns and samples as rows
+to_count = t(to_count[ ,-c(1)])
+# Assign protein names as column headers
+colnames(to_count) = colnames
+# Convert to dataframe
+to_count = as.data.frame(to_count)
+
+knitr::kable(head(to_count))
+```
+
+Count NAs for each protein.
+
+```{r}
+# Count NAs in each column
+# map() applies a function to each column of the dataframe
+N_Nas = map(to_count, ~sum(is.na(.)))
+# Convert the list output from map() into a simple vector of NA counts
+NAs = unlist(N_Nas)
+
+knitr::kable(head(NAs))
+```
+
+Transform the results for plotting.
+
+```{r}
+# Convert to dataframe
+NAs = as.data.frame(as.matrix(NAs))
+# Move row names into a column and rename columns
+NAs = rownames_to_column(NAs)
+colnames(NAs) = c("UniprotAccession" ,"NA_count")
+
+knitr::kable(head(NAs))
+```
+
+Create plot theme.
+
+```{r}
+my_theme = function() {
+  theme_minimal() +
+    theme(axis.line = element_line(colour = "black"),  # Add axis lines
+          axis.ticks = element_line(colour = "black"),  # Add axis ticks
+          plot.title = element_text(face = "bold", hjust=0.5), # Adjust plot title
+          axis.title.y = element_text(margin = margin(r = 15), # Adjust y-axis title position
+                                      size = 13), # Adjust y-axis title size
+          axis.text.x = element_text(size = 10), # Increase x-axis text size
+          axis.text.y = element_text(size = 10) # Increase y-axis text size
+    ) 
+}
+```
+
+Plot a histogram showing the distribution of missing data across proteins. For example, a large peak at `NA_count = 0` indicates many proteins have no missing data.
+
+```{r}
+ggplot(data = NAs, aes(x=NA_count)) +
+  geom_histogram(binwidth = 1) +
+  scale_x_continuous(breaks=seq(0,100, by=10)) +
+  my_theme()
+```
+
+Calculate how many proteins have complete data (no missing values) in this dataset.
+
+```{r}
+# Calculate total number of proteins (rows) in the dataset
+n_total = nrow(NAs)
+n_total # 9560 proteins
+```
+
+```{r}
+# Calculate the number of proteins (rows) with no missing values
+n_complete = sum(NAs$NA_count == 0)
+n_complete # 4954 complete proteins
+```
+
+Out of the 9560 proteins that were detected in at least one sample, 4954 proteins were quantified in every (non-pooled) sample.
+
 #### Log-transformation?
 
 Check if the data will need to be log-transformed.
@@ -107,22 +191,6 @@ to_plot = to_plot %>%
   mutate(TransformQuant = log2(Quant))
 
 knitr::kable(head(to_plot))
-```
-
-Create plot theme.
-
-```{r}
-my_theme = function() {
-  theme_minimal() +
-    theme(axis.line = element_line(colour = "black"),  # Add axis lines
-          axis.ticks = element_line(colour = "black"),  # Add axis ticks
-          plot.title = element_text(face = "bold", hjust=0.5), # Adjust plot title
-          axis.title.y = element_text(margin = margin(r = 15), # Adjust y-axis title position
-                                      size = 13), # Adjust y-axis title size
-          axis.text.x = element_text(size = 10), # Increase x-axis text size
-          axis.text.y = element_text(size = 10) # Increase y-axis text size
-    ) 
-}
 ```
 
 Check for right skewness.
@@ -222,74 +290,6 @@ ggplot(to_plot_mean_var, aes(x=mean, y=var)) +
 Log-transformation should stabilise the mean-variance relationship.
 
 Overall, this data benefits from log-transformation as it improves normality and reduces skewness.
-
-#### Missingness?
-
-Inspect the missingness of the TMT dataset by counting the number of `NA`s in every non-pooled sample.
-
-```{r}
-# Select relevant data (non-pooled samples)
-to_count = select(TMT_data, UniprotAccession, A1:J9)
-# Assign protein names from UniprotAccession to colnames variable
-colnames = to_count$UniprotAccession
-# Transpose the dataset - makes proteins the columns and samples as rows
-to_count = t(to_count[ ,-c(1)])
-# Assign protein names as column headers
-colnames(to_count) = colnames
-# Convert to dataframe
-to_count = as.data.frame(to_count)
-
-knitr::kable(head(to_count))
-```
-
-Count NAs for each protein.
-
-```{r}
-# Count NAs in each column
-# map() applies a function to each column of the dataframe
-N_Nas = map(to_count, ~sum(is.na(.)))
-# Convert the list output from map() into a simple vector of NA counts
-NAs = unlist(N_Nas)
-
-knitr::kable(head(NAs))
-```
-
-Transform the results for plotting.
-
-```{r}
-# Convert to dataframe
-NAs = as.data.frame(as.matrix(NAs))
-# Move row names into a column and rename columns
-NAs = rownames_to_column(NAs)
-colnames(NAs) = c("UniprotAccession" ,"NA_count")
-
-knitr::kable(head(NAs))
-```
-
-Plot a histogram showing the distribution of missing data across proteins. For example, a large peak at `NA_count = 0` indicates many proteins have no missing data.
-
-```{r}
-ggplot(data = NAs, aes(x=NA_count)) +
-  geom_histogram(binwidth = 1) +
-  scale_x_continuous(breaks=seq(0,100, by=10)) +
-  my_theme()
-```
-
-Calculate how many proteins have complete data (no missing values) in this dataset.
-
-```{r}
-# Calculate total number of proteins (rows) in the dataset
-n_total = nrow(NAs)
-n_total # 9560 proteins
-```
-
-```{r}
-# Calculate the number of proteins (rows) with no missing values
-n_complete = sum(NAs$NA_count == 0)
-n_complete # 4954 complete proteins
-```
-
-Out of the 9560 proteins that were detected in at least one sample, 4954 proteins were quantified in every (non-pooled) sample.
 
 ## Filtering missing data
 
