@@ -1,0 +1,462 @@
+---
+title: "3. Differential analysis"
+format: html
+editor: visual
+---
+
+## Data
+
+The data used in this example has been taken from ([Carlyle et al., 2021](https://www.sciencedirect.com/science/article/pii/S0197458021001275?via%3Dihub#sec0002)).
+
+This paper used multiplexed liquid chromatography mass-spectrometry to quantify enriched synaptic proteins from the parietal association cortex of 100 subjects with contrasting levels of AD pathology and cognitive performance.
+
+This file is used to assess protein enrichment across organelle subcellular compartments.
+
+### Load libraries
+
+```{r, results="hide", message=FALSE}
+library(tidyverse)
+library(broom)
+library(ggsignif)
+library(scales)
+library(openxlsx)
+library(gplots)
+library(ggrepel)
+library(ggthemes)
+```
+
+### Load data
+
+Import the file containing the normalised and filtered TMT data.
+
+```{r, message=FALSE}
+TMT_data = read_csv("../outs/TMT_data_synaptic.csv")
+
+knitr::kable(head(TMT_data))
+```
+
+Load the file containing the demographic data.
+
+```{r, message=FALSE}
+sample_key = read_csv("../data/Table_S1_individual_sample_demographics.csv")
+
+knitr::kable(head(sample_key))
+```
+
+Create a `protein_IDs` dataframe for later use.
+
+```{r}
+protein_IDs = TMT_data %>%
+  select(ProteinID:ProteinDescription)
+
+head(protein_IDs)
+```
+
+## Linear modelling
+
+Perform linear regression, which models the linear relationship between the log-transformed protein abundance and various predictor variables (in this case, diagnostic group).
+
+To cover all diagnostic group comparisons, three linear models will be needed.
+
+### Set up the data
+
+Set up the `to_model` dataframe to be used for modelling.
+
+```{r}
+# Select relevant columns
+to_model = TMT_data %>%
+  select(UniprotAccession, A1:J9)
+
+# Transpose the dataframe
+colnames = to_model$UniprotAccession
+to_model = t(to_model[ ,-1])
+colnames(to_model) = colnames
+to_model = rownames_to_column((as.data.frame(to_model)), var="Code")
+
+# Merge with sample key
+to_model = merge(sample_key, to_model, by="Code")
+  
+knitr::kable(head(to_model))
+```
+
+Replace all `NA` values with the lowest detected value for that protein (imputation).
+
+```{r}
+# Subset demographic data
+to_model_demos = to_model[,1:20]
+# Subset protein data
+to_model_data = to_model[,21:ncol(to_model)]
+
+# Replace missing values in protein data with the minimum non-missing value in each column
+# mutate_all() applies a function to all columns
+# .x is a placeholder for the current column in the mutate_all operation
+# min(.x, na.rm=TRUE) finds the minimum value in the column, ignoring NAs
+to_model_data = to_model_data %>%
+   mutate_all(~ifelse(is.na(.x), min(.x, na.rm = TRUE), .x))  
+
+# Recombine demographic and protein data
+to_model = cbind(to_model_demos, to_model_data)
+
+knitr::kable(head(to_model))
+```
+
+### Linear model (relative to normal)
+
+Set the reference for diagnosis group so that all comparisons are relative to the normal category.
+
+```{r}
+# Convert Project.diagnosis to a factor and set "N" (normal) as the reference level
+to_model$Project.diagnosis = factor(to_model$Project.diagnosis, levels=c("N", "DEM_AD", "RES", "FRL"))
+```
+
+Perform the linear model on log-transformed protein expression levels (to satisfy assumptions of normality).
+
+Fit a model for each protein using the predictors: `Project.diagnosis`, `Sex`, `Education`, `Age_at_death`, and `Post_mortem_interval`.
+
+```{r}
+diag_lm = lm(log2(as.matrix(to_model[ ,21:ncol(to_model)])) ~ Project.diagnosis + Sex + Education + Age_at_death + Post_mortem_interval, data = to_model)
+```
+
+Tidy the results and exclude the intercept term to keep only the predictor terms for further analysis.
+
+```{r}
+# Tidy into a more structured dataframe using tidy() from the broom package
+diag_lm_tidy = tidy(diag_lm) %>%
+  filter(term != "(Intercept)")
+
+head(diag_lm_tidy)
+```
+
+Rename the terms comparing the diagnosis groups to normal.
+
+```{r}
+diag_lm_tidy$term[diag_lm_tidy$term == "Project.diagnosisDEM_AD"] = "Dx_DEMoverN"
+diag_lm_tidy$term[diag_lm_tidy$term == "Project.diagnosisFRL"] = "Dx_FRLoverN"
+diag_lm_tidy$term[diag_lm_tidy$term == "Project.diagnosisRES"] = "Dx_RESoverN"
+
+head(diag_lm_tidy)
+```
+
+### Linear model (relative to DEM-AD)
+
+Set the reference for diagnosis group so that all comparisons are relative to the DEM-AD category.
+
+```{r}
+# Convert Project.diagnosis to a factor and set "DEM_AD" as the reference level
+to_model$Project.diagnosis = factor(to_model$Project.diagnosis, levels=c("DEM_AD","RES","FRL","N"))
+```
+
+Perform the linear model on log-transformed protein expression levels (to satisfy assumptions of normality).
+
+Fit a model for each protein using the predictors: `Project.diagnosis`, `Sex`, `Education`, `Age_at_death`, and `Post_mortem_interval`.
+
+```{r}
+diag_lm_2 = lm(log2(as.matrix(to_model[ ,21:ncol(to_model)])) ~ Project.diagnosis + Sex + Education + Age_at_death + Post_mortem_interval, data = to_model)
+```
+
+Tidy the results and filter for comparisons not saved so far.
+
+```{r}
+# Tidy into a more structured dataframe using tidy() from the broom package
+diag_lm_2_tidy = tidy(diag_lm_2) %>%
+  filter(term == "Project.diagnosisRES" | term == "Project.diagnosisFRL")
+
+head(diag_lm_2_tidy)
+```
+
+Rename the terms comparing the diagnosis groups to DEM-AD.
+
+```{r}
+diag_lm_2_tidy$term[diag_lm_2_tidy$term == "Project.diagnosisFRL"] = "Dx_FRLoverDEM"
+diag_lm_2_tidy$term[diag_lm_2_tidy$term == "Project.diagnosisRES"] = "Dx_RESoverDEM"
+
+head(diag_lm_2_tidy)
+```
+
+The `estimate` column represents the regression coefficient i.e. the magnitude and direction of the effect of the predictor variable (diagnosis) on the outcome variable (protein expression levels). Because the response variable (protein expression) is log2-transformed during modelling, `estimate` represents the log2-transformed difference in the outcome variable between the test group and the reference group i.e. log2 fold change (logFC).
+
+A positive value indicates an increase in the outcome variable and a negative value indicates a decrease in the outcome variable.
+
+### Linear model (relative to Res)
+
+Set the reference for diagnosis group so that all comparisons are relative to the RES category.
+
+```{r}
+# Convert Project.diagnosis to a factor and set "N" (normal) as the reference level
+to_model$Project.diagnosis <- factor(as.character(to_model$Project.diagnosis), levels = c("RES","FRL","N","DEM_AD"))
+```
+
+Perform the linear model on log-transformed protein expression levels (to satisfy assumptions of normality).
+
+Fit a model for each protein using the predictors: `Project.diagnosis`, `Sex`, `Education`, `Age_at_death`, and `Post_mortem_interval`.
+
+```{r}
+diag_lm_3 = lm(log2(as.matrix(to_model[ ,21:ncol(to_model)])) ~ Project.diagnosis + Sex + Education + Age_at_death + Post_mortem_interval, data = to_model)
+```
+
+Tidy the results and filter for comparisons not saved so far.
+
+```{r}
+# Tidy into a more structured dataframe using tidy() from the broom package
+diag_lm_3_tidy = tidy(diag_lm_3) %>%
+  filter(term == "Project.diagnosisFRL")
+
+head(diag_lm_3_tidy)
+```
+
+Rename the terms comparing the diagnosis groups to Res.
+
+```{r}
+diag_lm_3_tidy$term[diag_lm_3_tidy$term == "Project.diagnosisFRL"] = "Dx_FRLoverRES"
+
+head(diag_lm_3_tidy)
+```
+
+### Combine
+
+```{r}
+diag_lm_tidy = rbind(diag_lm_tidy, diag_lm_2_tidy, diag_lm_3_tidy)
+
+diag_lm_tidy = diag_lm_tidy %>%
+  rename(logFC = estimate)
+
+diag_lm_tidy
+```
+
+## Create a dataframe summarising the differential expression of proteins by diagnosis
+
+Filter the `diag_lm_tidy` dataframe for the diagnosis category.
+
+```{r}
+de_diagnosis = diag_lm_tidy %>%
+  filter(term == "Dx_DEMoverN" | term == "Dx_FRLoverDEM" | term == "Dx_FRLoverN" | term == "Dx_FRLoverRES" | term == "Dx_RESoverDEM" | term == "Dx_RESoverN")
+```
+
+### p-value adjustment
+
+Apply the Benjamini-Hochberg (BH) method to control the False Discovery Rate (FDR) for the p-values (`padj`).
+
+```{r}
+de_diagnosis$padj = p.adjust(de_diagnosis$p.value, method="BH")
+
+head(de_diagnosis)
+```
+
+Add significance labels and direction of change.
+
+```{r}
+de_diagnosis$significant = ifelse(de_diagnosis$padj <= 0.05, "Yes", "No")
+de_diagnosis$direction = ifelse(de_diagnosis$logFC > 0, "Increase", "Decrease")
+
+head(de_diagnosis)
+```
+
+Merge with protein metadata.
+
+```{r}
+# Match UniprotAccession from protein_IDs with response from de_diagnosis
+de_diagnosis = merge(protein_IDs, de_diagnosis, by.x="UniprotAccession", by.y="response")
+
+head(de_diagnosis)
+```
+
+Sort by adjusted p-value.
+
+```{r}
+de_diagnosis = de_diagnosis %>%
+  arrange(padj)
+
+knitr::kable(head(de_diagnosis))
+```
+
+### Summary table
+
+Create a summary table of proteins with significant differences.
+
+```{r}
+sig_summary_table = de_diagnosis %>%
+  filter(significant == "Yes") %>%
+  group_by(term, direction) %>%
+  summarise (n = n())
+
+sig_summary_table
+```
+
+Tidy the table.
+
+```{r}
+sig_summary_table = sig_summary_table %>%
+  # Convert direction column into two separate columns with their respective n counts in each column
+  spread(direction, n) %>%
+  # Rename the variable column name
+  rename(Variable = term) %>%
+  # Rename the values in the variable column
+  mutate(Variable = recode(Variable,
+                           "Dx_DEMoverN"="Dx Dementia-AD vs Normal",
+                           "Dx_FRLoverDEM"="Dx Frail vs Dementia-AD",
+                           "Dx_FRLoverN"="Dx Frail vs Normal",
+                           "Dx_FRLoverRES"="Dx Frail vs Resilient",
+                           "Dx_RESoverDEM"="Dx Resilient vs Dementia-AD",
+                           "Dx_RESoverN"="Dx Resilient vs Normal")) %>%
+  # Replace NAs with 0
+  mutate(across(everything(), ~ replace_na(., 0))) %>%
+  # Reorder columns
+  select(Variable, Increase, Decrease)
+  
+
+sig_summary_table
+```
+
+## Heatmap
+
+Create a heatmap of significant proteins for DEM vs NOR.
+
+Filter for significant proteins for DEM vs NOR.
+
+```{r}
+sig_DEMvsNOR = de_diagnosis %>%
+  filter(significant == "Yes") %>%
+  filter(term == "Dx_DEMoverN")
+
+# Set as characters
+sig_DEMvsNOR$UniprotAccession = as.character(sig_DEMvsNOR$UniprotAccession)
+sig_DEMvsNOR$GeneName = as.character(sig_DEMvsNOR$GeneName)
+
+head(sig_DEMvsNOR)
+```
+
+Prepare the sample key.
+
+```{r}
+# Filter for only DEM_AD and N samples
+key_DEMvsNOR = sample_key %>%
+  filter(Project.diagnosis == "DEM_AD" | Project.diagnosis == "N")
+
+head(key_DEMvsNOR)
+
+# Create list of sample IDs (which is the Code column)
+sampleID_DEMvsNOR = key_DEMvsNOR$Code
+
+sampleID_DEMvsNOR
+```
+
+Prepare the data for heatmap. Create a subset of `TMT_data` with expression data for the samples and filter to significant proteins.
+
+```{r}
+for_heatmaps_DEMvsNOR = TMT_data %>%
+  # Select relevant columns
+  select(UniprotAccession, GeneName, A1:J9) %>%
+  # Filter to only include proteins in sig_DEMvsNOR - keep rows where the value UniprotAccession column is found in UniprotAccession column in sig_DEMvsNOR
+  filter(UniprotAccession %in% sig_DEMvsNOR$UniprotAccession) %>%
+  # Remove UniprotAccession column
+  select(-UniprotAccession) %>%
+  # Set GeneName column as row names
+  column_to_rownames("GeneName") %>%
+  # Select releavnt columns based on sample IDs found the in the filtered sample ID list
+  select(all_of(sampleID_DEMvsNOR))
+
+head(for_heatmaps_DEMvsNOR)
+```
+
+Create a dataframe `dx_col` containing colours for each diagnosis group.
+
+```{r}
+# Initialise with default colour
+dx_col = data.frame(sampleID=key_DEMvsNOR$Code, dx=key_DEMvsNOR$Project.diagnosis, colour="#5e3c99",stringsAsFactors = F)
+dx_col$colour[dx_col$dx == "DEM_AD"] = "#e66101"
+
+head(dx_col)
+```
+
+Generate the heatmap for log2-transformed expression data using the `heatmap.2()` function from the `gplots` package.
+
+```{r, fig.width=10}
+heatmap.2(t(as.matrix(log2(for_heatmaps_DEMvsNOR))),
+          trace="none",
+          scale="col", # Normalise data across samplew
+          col=colorRampPalette(c("steelblue","white","darkred"))(50), # Colour scale
+          # Use diagnosis colours to annotate the samples
+          RowSideColors=dx_col$colour[match(colnames(for_heatmaps_DEMvsNOR), dx_col$sampleID)],
+          main="Significant DE proteins: DEM vs NOR",
+          cexCol = 0.5)
+```
+
+## Volcano plot
+
+Prepare data.
+
+```{r}
+# Filter for term and selct columns
+de = de_diagnosis %>%
+  filter(term == "Dx_DEMoverN") %>%
+  select(UniprotAccession, GeneName, term, logFC, padj)
+
+# Set thresholds
+thresh_fc=0.1 # Threshold for log2 fold change
+thresh_pval=0.05 # Threshold for adjusted p-value
+
+# Count total proteins
+n_total = nrow(de) # 3924 proteins
+
+# Count how many proteins are in each category (unchanged, upregulated, downregulated)
+n_unchanged = de %>%
+  # Filter for proteins where logFC is between -thresh_fc and +thresh_fc
+  filter(logFC < thresh_fc & logFC > -(thresh_fc)) %>%
+  nrow()
+n_up = de %>%
+  # Filter for proteins where logFC is greater than thresh_fc and significant
+  filter(logFC >= thresh_fc & padj <= thresh_pval) %>%
+  nrow()
+n_down = de %>%
+  # Filter for proteins where logFC is less than -thresh_fc and significant
+  filter(logFC <= -(thresh_fc) & padj <= thresh_pval) %>%
+  nrow()
+
+# Assign DE lables to proteins
+de$expression = paste0("Unchanged (",n_unchanged,")")
+de$expression[de$logFC >= thresh_fc & de$padj <= thresh_pval] = paste0("Up (",n_up,")")
+de$expression[de$logFC <= -(thresh_fc) & de$padj <= thresh_pval] = paste0("Down (",n_down,")")
+
+# Set colours for plot - the order of colours will correspond to the order of levels in the factor variable de$Expression
+  if (n_up == 0 & n_down == 0){ # If there are no up or downregulated genes
+      cvec = c("#84A1AB") # Use grey-blue for all genes
+  } else if (n_up == 0){ # If there are only downregulated genes
+      cvec = c("#B02302", "#84A1AB") # Use red for down genes and grey-blue for unchanged genes
+  } else if (n_down == 0){ # If there are only upregulated genes
+      cvec = c("#84A1AB", "#61B002") # Use grey-blue for unchanged genes and green for up genes
+  } else { # If there are downregulated and upregulated genes
+      cvec = c("#B02302", "#84A1AB", "#61B002") # Use red for down genes, and grey-blue for unchanged genes, and green for up genes
+  }
+
+# Add gene names to genes that are differentially expressed
+# Create "delabel" column and initialise with NA values for all rows (by default, no genes are labelled on the plot)
+de$delabel = NA
+# Select delabel entries where expression does not contain "Unchanged"
+# Assign GeneName where expression does not contain "Unchanged"
+de$delabel[!grepl("Unchanged", de$expression)] <- de$GeneName[!grepl("Unchanged", de$expression)]
+# Sort the data frame by adjusted p-values
+de = de %>%
+  arrange(padj)
+
+head(de)
+```
+
+Generate volcano plot, where the x-axis is mapped to the log2 fold change values (i.e. magnitude of change) and the y-axis is mapped to the -log10 of the padj values (i.e. significance).
+
+```{r, fig.width=7.5}
+ggplot(data=de, aes(x=logFC, y=-log10(padj)))  +
+          # Add vertical dashed lines at the foldchange thresholds
+          geom_vline(xintercept=c(-(thresh_fc), thresh_fc), col="light grey", linetype="dashed") +
+          # Add horizontal dashed line at the pval threshold
+          geom_hline(yintercept=-log10(thresh_pval), col="light grey", linetype="dashed") +
+          # Add points to the plot, coloured by "expression" column
+          geom_point(aes(color=expression), alpha=0.5) +
+          # Add text lables (avoiding overlap) to the top 25 most signficant DE genes
+          # Set x- and y-coordinates for labels using "logFC" and "padj" columns
+          geom_text_repel(data=de[1:25,],aes(x = logFC, y = -log10(padj),label=delabel),max.overlaps=25,size=3) +
+          # Use colours specified earlier
+          scale_color_manual(values=cvec) +
+          # Set appearance
+          theme_few() +
+          labs(title = "Dx_DEMoverN")
+```
