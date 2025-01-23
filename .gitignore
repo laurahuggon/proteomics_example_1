@@ -50,4 +50,5 @@ rsconnect/
 .DS_Store
 data/
 scripts/1_preprocessing_files/
-Scripts/2_subcellular_fraction_enrichment_files
+scripts/2_subcellular_fraction_enrichment_files
+Scripts/3_differential_analysis_files
