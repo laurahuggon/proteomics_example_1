@@ -178,6 +178,7 @@ organelle_count_table$direction = ifelse(organelle_count_table$fold_enrichment >
 # p.adj is significant if less than 0.05
 organelle_count_table = organelle_count_table %>%
   mutate(significance = case_when(
+    p.adj <= 0.0001 ~ "****",
     p.adj <= 0.001 ~ "***",
     p.adj <= 0.01 ~ "**",
     p.adj <= 0.05 ~ "*",
@@ -190,6 +191,22 @@ organelle_count_table = organelle_count_table %>%
 organelle_count_table
 ```
 
+Create plot theme.
+
+```{r}
+my_theme = function() {
+  theme_minimal() +
+    theme(axis.line = element_line(colour = "black"),  # Add axis lines
+          axis.ticks = element_line(colour = "black"),  # Add axis ticks
+          plot.title = element_text(face = "bold"), # Adjust plot title
+          axis.title.y = element_text(margin = margin(r = 15), # Adjust y-axis title position
+                                      size = 13), # Adjust y-axis title size
+          axis.text.x = element_text(size = 10), # Increase x-axis text size
+          axis.text.y = element_text(size = 10) # Increase y-axis text size
+    ) 
+}
+```
+
 Plot results.
 
 ```{r}
@@ -199,7 +216,7 @@ upper_limit = max_y_value * 1.20  # 20% buffer above the max value
 ggplot(data = organelle_count_table, aes(x=organelle, y=fold_enrichment, fill=direction)) +
   geom_col() +
   geom_hline(yintercept=1, linetype="dashed", color="black", size=0.3) +
-  theme_bw() +
+  my_theme() +
   theme(axis.text.x=element_text(angle=45, hjust=1)) +
   ylab("Fold enrichment") +
   xlab("Subcellular fraction") +
