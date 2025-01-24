@@ -68,6 +68,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="3_differential_analysis_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="3_differential_analysis_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -1261,17 +1290,70 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>protein_IDs <span class="ot">=</span> TMT_data <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ProteinID<span class="sc">:</span>ProteinDescription)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(protein_IDs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 5
-  ProteinID      UniprotAccession UniprotProteinName GeneName ProteinDescription
-  &lt;chr&gt;          &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;    &lt;chr&gt;             
-1 sp|P17600|SYN… P17600           SYN1_HUMAN         SYN1     Synapsin-1        
-2 sp|Q9H2G2|SLK… Q9H2G2           SLK_HUMAN          SLK      STE20-like serine…
-3 sp|Q15555-3|M… Q15555.3         MARE2_HUMAN        MAPRE2   Isoform 3 of Micr…
-4 sp|Q9NZJ6|COQ… Q9NZJ6           COQ3_HUMAN         COQ3     Hexaprenyldihydro…
-5 sp|Q9UL25|RAB… Q9UL25           RAB21_HUMAN        RAB21    Ras-related prote…
-6 sp|Q7L0J3|SV2… Q7L0J3           SV2A_HUMAN         SV2A     Synaptic vesicle …</code></pre>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(protein_IDs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 6%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ProteinID</th>
+<th style="text-align: left;">UniprotAccession</th>
+<th style="text-align: left;">UniprotProteinName</th>
+<th style="text-align: left;">GeneName</th>
+<th style="text-align: left;">ProteinDescription</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">sp|P17600|SYN1_HUMAN</td>
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">SYN1_HUMAN</td>
+<td style="text-align: left;">SYN1</td>
+<td style="text-align: left;">Synapsin-1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sp|Q9H2G2|SLK_HUMAN</td>
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">SLK_HUMAN</td>
+<td style="text-align: left;">SLK</td>
+<td style="text-align: left;">STE20-like serine/threonine-protein kinase</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sp|Q15555-3|MARE2_HUMAN</td>
+<td style="text-align: left;">Q15555.3</td>
+<td style="text-align: left;">MARE2_HUMAN</td>
+<td style="text-align: left;">MAPRE2</td>
+<td style="text-align: left;">Isoform 3 of Microtubule-associated protein RP/EB family member 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sp|Q9NZJ6|COQ3_HUMAN</td>
+<td style="text-align: left;">Q9NZJ6</td>
+<td style="text-align: left;">COQ3_HUMAN</td>
+<td style="text-align: left;">COQ3</td>
+<td style="text-align: left;">Hexaprenyldihydroxybenzoate methyltransferase, mitochondrial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sp|Q9UL25|RAB21_HUMAN</td>
+<td style="text-align: left;">Q9UL25</td>
+<td style="text-align: left;">RAB21_HUMAN</td>
+<td style="text-align: left;">RAB21</td>
+<td style="text-align: left;">Ras-related protein Rab-21</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sp|Q7L0J3|SV2A_HUMAN</td>
+<td style="text-align: left;">Q7L0J3</td>
+<td style="text-align: left;">SV2A_HUMAN</td>
+<td style="text-align: left;">SV2A</td>
+<td style="text-align: left;">Synaptic vesicle glycoprotein 2A</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </section>
@@ -1284,20 +1366,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="set-up-the-data">Set up the data</h3>
 <p>Set up the <code>to_model</code> dataframe to be used for modelling.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select relevant columns</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> TMT_data <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, A1<span class="sc">:</span>J9)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Transpose the dataframe</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>colnames <span class="ot">=</span> to_model<span class="sc">$</span>UniprotAccession</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> <span class="fu">t</span>(to_model[ ,<span class="sc">-</span><span class="dv">1</span>])</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(to_model) <span class="ot">=</span> colnames</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> <span class="fu">rownames_to_column</span>((<span class="fu">as.data.frame</span>(to_model)), <span class="at">var=</span><span class="st">"Code"</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge with sample key</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> <span class="fu">merge</span>(sample_key, to_model, <span class="at">by=</span><span class="st">"Code"</span>)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(to_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select relevant columns</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> TMT_data <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, A1<span class="sc">:</span>J9)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Transpose the dataframe</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>colnames <span class="ot">=</span> to_model<span class="sc">$</span>UniprotAccession</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> <span class="fu">t</span>(to_model[ ,<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(to_model) <span class="ot">=</span> colnames</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> <span class="fu">rownames_to_column</span>((<span class="fu">as.data.frame</span>(to_model)), <span class="at">var=</span><span class="st">"Code"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge with sample key</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> <span class="fu">merge</span>(sample_key, to_model, <span class="at">by=</span><span class="st">"Code"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(to_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -32877,22 +32959,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Replace all <code>NA</code> values with the lowest detected value for that protein (imputation).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset demographic data</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>to_model_demos <span class="ot">=</span> to_model[,<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>]</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset protein data</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>to_model_data <span class="ot">=</span> to_model[,<span class="dv">21</span><span class="sc">:</span><span class="fu">ncol</span>(to_model)]</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace missing values in protein data with the minimum non-missing value in each column</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># mutate_all() applies a function to all columns</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># .x is a placeholder for the current column in the mutate_all operation</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># min(.x, na.rm=TRUE) finds the minimum value in the column, ignoring NAs</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>to_model_data <span class="ot">=</span> to_model_data <span class="sc">%&gt;%</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate_all</span>(<span class="sc">~</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(.x), <span class="fu">min</span>(.x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), .x))  </span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Recombine demographic and protein data</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> <span class="fu">cbind</span>(to_model_demos, to_model_data)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(to_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset demographic data</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>to_model_demos <span class="ot">=</span> to_model[,<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset protein data</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>to_model_data <span class="ot">=</span> to_model[,<span class="dv">21</span><span class="sc">:</span><span class="fu">ncol</span>(to_model)]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace missing values in protein data with the minimum non-missing value in each column</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># mutate_all() applies a function to all columns</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># .x is a placeholder for the current column in the mutate_all operation</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># min(.x, na.rm=TRUE) finds the minimum value in the column, ignoring NAs</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>to_model_data <span class="ot">=</span> to_model_data <span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate_all</span>(<span class="sc">~</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(.x), <span class="fu">min</span>(.x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), .x))  </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Recombine demographic and protein data</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>to_model <span class="ot">=</span> <span class="fu">cbind</span>(to_model_demos, to_model_data)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(to_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -64475,50 +64557,164 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="linear-model-relative-to-normal">Linear model (relative to normal)</h3>
 <p>Set the reference for diagnosis group so that all comparisons are relative to the normal category.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert Project.diagnosis to a factor and set "N" (normal) as the reference level</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>to_model<span class="sc">$</span>Project.diagnosis <span class="ot">=</span> <span class="fu">factor</span>(to_model<span class="sc">$</span>Project.diagnosis, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"N"</span>, <span class="st">"DEM_AD"</span>, <span class="st">"RES"</span>, <span class="st">"FRL"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert Project.diagnosis to a factor and set "N" (normal) as the reference level</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>to_model<span class="sc">$</span>Project.diagnosis <span class="ot">=</span> <span class="fu">factor</span>(to_model<span class="sc">$</span>Project.diagnosis, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"N"</span>, <span class="st">"DEM_AD"</span>, <span class="st">"RES"</span>, <span class="st">"FRL"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Perform the linear model on log-transformed protein expression levels (to satisfy assumptions of normality).</p>
 <p>Fit a model for each protein using the predictors: <code>Project.diagnosis</code>, <code>Sex</code>, <code>Education</code>, <code>Age_at_death</code>, and <code>Post_mortem_interval</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>diag_lm <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">log2</span>(<span class="fu">as.matrix</span>(to_model[ ,<span class="dv">21</span><span class="sc">:</span><span class="fu">ncol</span>(to_model)])) <span class="sc">~</span> Project.diagnosis <span class="sc">+</span> Sex <span class="sc">+</span> Education <span class="sc">+</span> Age_at_death <span class="sc">+</span> Post_mortem_interval, <span class="at">data =</span> to_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>diag_lm <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">log2</span>(<span class="fu">as.matrix</span>(to_model[ ,<span class="dv">21</span><span class="sc">:</span><span class="fu">ncol</span>(to_model)])) <span class="sc">~</span> Project.diagnosis <span class="sc">+</span> Sex <span class="sc">+</span> Education <span class="sc">+</span> Age_at_death <span class="sc">+</span> Post_mortem_interval, <span class="at">data =</span> to_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Tidy the results and exclude the intercept term to keep only the predictor terms for further analysis.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy into a more structured dataframe using tidy() from the broom package</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy <span class="ot">=</span> <span class="fu">tidy</span>(diag_lm) <span class="sc">%&gt;%</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">"(Intercept)"</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(diag_lm_tidy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 6
-  response term                    estimate std.error statistic p.value
-  &lt;chr&gt;    &lt;chr&gt;                      &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 P17600   Project.diagnosisDEM_AD  0.0319    0.0896     0.356   0.723 
-2 P17600   Project.diagnosisRES     0.00758   0.0902     0.0841  0.933 
-3 P17600   Project.diagnosisFRL     0.0286    0.0912     0.314   0.754 
-4 P17600   SexM                    -0.0549    0.0693    -0.792   0.430 
-5 P17600   Education               -0.0175    0.00975   -1.79    0.0769
-6 P17600   Age_at_death             0.00709   0.00592    1.20    0.234 </code></pre>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy into a more structured dataframe using tidy() from the broom package</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy <span class="ot">=</span> <span class="fu">tidy</span>(diag_lm) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">"(Intercept)"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(diag_lm_tidy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 32%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 14%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">response</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Project.diagnosisDEM_AD</td>
+<td style="text-align: right;">0.0319053</td>
+<td style="text-align: right;">0.0896484</td>
+<td style="text-align: right;">0.3558931</td>
+<td style="text-align: right;">0.7227354</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Project.diagnosisRES</td>
+<td style="text-align: right;">0.0075839</td>
+<td style="text-align: right;">0.0902155</td>
+<td style="text-align: right;">0.0840647</td>
+<td style="text-align: right;">0.9331876</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">0.0286013</td>
+<td style="text-align: right;">0.0911693</td>
+<td style="text-align: right;">0.3137165</td>
+<td style="text-align: right;">0.7544465</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">SexM</td>
+<td style="text-align: right;">-0.0549264</td>
+<td style="text-align: right;">0.0693225</td>
+<td style="text-align: right;">-0.7923316</td>
+<td style="text-align: right;">0.4302057</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Education</td>
+<td style="text-align: right;">-0.0174520</td>
+<td style="text-align: right;">0.0097535</td>
+<td style="text-align: right;">-1.7893112</td>
+<td style="text-align: right;">0.0768554</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Age_at_death</td>
+<td style="text-align: right;">0.0070911</td>
+<td style="text-align: right;">0.0059166</td>
+<td style="text-align: right;">1.1985056</td>
+<td style="text-align: right;">0.2337984</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Rename the terms comparing the diagnosis groups to normal.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy<span class="sc">$</span>term[diag_lm_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisDEM_AD"</span>] <span class="ot">=</span> <span class="st">"Dx_DEMoverN"</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy<span class="sc">$</span>term[diag_lm_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>] <span class="ot">=</span> <span class="st">"Dx_FRLoverN"</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy<span class="sc">$</span>term[diag_lm_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisRES"</span>] <span class="ot">=</span> <span class="st">"Dx_RESoverN"</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(diag_lm_tidy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 6
-  response term         estimate std.error statistic p.value
-  &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 P17600   Dx_DEMoverN   0.0319    0.0896     0.356   0.723 
-2 P17600   Dx_RESoverN   0.00758   0.0902     0.0841  0.933 
-3 P17600   Dx_FRLoverN   0.0286    0.0912     0.314   0.754 
-4 P17600   SexM         -0.0549    0.0693    -0.792   0.430 
-5 P17600   Education    -0.0175    0.00975   -1.79    0.0769
-6 P17600   Age_at_death  0.00709   0.00592    1.20    0.234 </code></pre>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy<span class="sc">$</span>term[diag_lm_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisDEM_AD"</span>] <span class="ot">=</span> <span class="st">"Dx_DEMoverN"</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy<span class="sc">$</span>term[diag_lm_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>] <span class="ot">=</span> <span class="st">"Dx_FRLoverN"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy<span class="sc">$</span>term[diag_lm_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisRES"</span>] <span class="ot">=</span> <span class="st">"Dx_RESoverN"</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(diag_lm_tidy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">response</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">0.0319053</td>
+<td style="text-align: right;">0.0896484</td>
+<td style="text-align: right;">0.3558931</td>
+<td style="text-align: right;">0.7227354</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_RESoverN</td>
+<td style="text-align: right;">0.0075839</td>
+<td style="text-align: right;">0.0902155</td>
+<td style="text-align: right;">0.0840647</td>
+<td style="text-align: right;">0.9331876</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_FRLoverN</td>
+<td style="text-align: right;">0.0286013</td>
+<td style="text-align: right;">0.0911693</td>
+<td style="text-align: right;">0.3137165</td>
+<td style="text-align: right;">0.7544465</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">SexM</td>
+<td style="text-align: right;">-0.0549264</td>
+<td style="text-align: right;">0.0693225</td>
+<td style="text-align: right;">-0.7923316</td>
+<td style="text-align: right;">0.4302057</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Education</td>
+<td style="text-align: right;">-0.0174520</td>
+<td style="text-align: right;">0.0097535</td>
+<td style="text-align: right;">-1.7893112</td>
+<td style="text-align: right;">0.0768554</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Age_at_death</td>
+<td style="text-align: right;">0.0070911</td>
+<td style="text-align: right;">0.0059166</td>
+<td style="text-align: right;">1.1985056</td>
+<td style="text-align: right;">0.2337984</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </section>
@@ -64526,49 +64722,163 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="linear-model-relative-to-dem-ad">Linear model (relative to DEM-AD)</h3>
 <p>Set the reference for diagnosis group so that all comparisons are relative to the DEM-AD category.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert Project.diagnosis to a factor and set "DEM_AD" as the reference level</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>to_model<span class="sc">$</span>Project.diagnosis <span class="ot">=</span> <span class="fu">factor</span>(to_model<span class="sc">$</span>Project.diagnosis, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"DEM_AD"</span>,<span class="st">"RES"</span>,<span class="st">"FRL"</span>,<span class="st">"N"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert Project.diagnosis to a factor and set "DEM_AD" as the reference level</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>to_model<span class="sc">$</span>Project.diagnosis <span class="ot">=</span> <span class="fu">factor</span>(to_model<span class="sc">$</span>Project.diagnosis, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"DEM_AD"</span>,<span class="st">"RES"</span>,<span class="st">"FRL"</span>,<span class="st">"N"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Perform the linear model on log-transformed protein expression levels (to satisfy assumptions of normality).</p>
 <p>Fit a model for each protein using the predictors: <code>Project.diagnosis</code>, <code>Sex</code>, <code>Education</code>, <code>Age_at_death</code>, and <code>Post_mortem_interval</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>diag_lm_2 <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">log2</span>(<span class="fu">as.matrix</span>(to_model[ ,<span class="dv">21</span><span class="sc">:</span><span class="fu">ncol</span>(to_model)])) <span class="sc">~</span> Project.diagnosis <span class="sc">+</span> Sex <span class="sc">+</span> Education <span class="sc">+</span> Age_at_death <span class="sc">+</span> Post_mortem_interval, <span class="at">data =</span> to_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>diag_lm_2 <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">log2</span>(<span class="fu">as.matrix</span>(to_model[ ,<span class="dv">21</span><span class="sc">:</span><span class="fu">ncol</span>(to_model)])) <span class="sc">~</span> Project.diagnosis <span class="sc">+</span> Sex <span class="sc">+</span> Education <span class="sc">+</span> Age_at_death <span class="sc">+</span> Post_mortem_interval, <span class="at">data =</span> to_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Tidy the results and filter for comparisons not saved so far.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy into a more structured dataframe using tidy() from the broom package</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>diag_lm_2_tidy <span class="ot">=</span> <span class="fu">tidy</span>(diag_lm_2) <span class="sc">%&gt;%</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Project.diagnosisRES"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(diag_lm_2_tidy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 6
-  response term                 estimate std.error statistic p.value
-  &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 P17600   Project.diagnosisRES -0.0243     0.0899   -0.271    0.787
-2 P17600   Project.diagnosisFRL -0.00330    0.0910   -0.0363   0.971
-3 Q9H2G2   Project.diagnosisRES  0.0495     0.0558    0.887    0.377
-4 Q9H2G2   Project.diagnosisFRL  0.0344     0.0565    0.609    0.544
-5 Q15555.3 Project.diagnosisRES -0.0213     0.0946   -0.225    0.823
-6 Q15555.3 Project.diagnosisFRL -0.0833     0.0957   -0.870    0.387</code></pre>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy into a more structured dataframe using tidy() from the broom package</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>diag_lm_2_tidy <span class="ot">=</span> <span class="fu">tidy</span>(diag_lm_2) <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Project.diagnosisRES"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(diag_lm_2_tidy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 29%">
+<col style="width: 15%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">response</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Project.diagnosisRES</td>
+<td style="text-align: right;">-0.0243213</td>
+<td style="text-align: right;">0.0899066</td>
+<td style="text-align: right;">-0.2705176</td>
+<td style="text-align: right;">0.7873680</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">-0.0033040</td>
+<td style="text-align: right;">0.0909673</td>
+<td style="text-align: right;">-0.0363203</td>
+<td style="text-align: right;">0.9711057</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Project.diagnosisRES</td>
+<td style="text-align: right;">0.0495169</td>
+<td style="text-align: right;">0.0558257</td>
+<td style="text-align: right;">0.8869921</td>
+<td style="text-align: right;">0.3773960</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">0.0343969</td>
+<td style="text-align: right;">0.0564843</td>
+<td style="text-align: right;">0.6089629</td>
+<td style="text-align: right;">0.5440498</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q15555.3</td>
+<td style="text-align: left;">Project.diagnosisRES</td>
+<td style="text-align: right;">-0.0212622</td>
+<td style="text-align: right;">0.0945710</td>
+<td style="text-align: right;">-0.2248274</td>
+<td style="text-align: right;">0.8226121</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q15555.3</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">-0.0832540</td>
+<td style="text-align: right;">0.0956867</td>
+<td style="text-align: right;">-0.8700678</td>
+<td style="text-align: right;">0.3865278</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Rename the terms comparing the diagnosis groups to DEM-AD.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>diag_lm_2_tidy<span class="sc">$</span>term[diag_lm_2_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>] <span class="ot">=</span> <span class="st">"Dx_FRLoverDEM"</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>diag_lm_2_tidy<span class="sc">$</span>term[diag_lm_2_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisRES"</span>] <span class="ot">=</span> <span class="st">"Dx_RESoverDEM"</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(diag_lm_2_tidy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 6
-  response term          estimate std.error statistic p.value
-  &lt;chr&gt;    &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 P17600   Dx_RESoverDEM -0.0243     0.0899   -0.271    0.787
-2 P17600   Dx_FRLoverDEM -0.00330    0.0910   -0.0363   0.971
-3 Q9H2G2   Dx_RESoverDEM  0.0495     0.0558    0.887    0.377
-4 Q9H2G2   Dx_FRLoverDEM  0.0344     0.0565    0.609    0.544
-5 Q15555.3 Dx_RESoverDEM -0.0213     0.0946   -0.225    0.823
-6 Q15555.3 Dx_FRLoverDEM -0.0833     0.0957   -0.870    0.387</code></pre>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>diag_lm_2_tidy<span class="sc">$</span>term[diag_lm_2_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>] <span class="ot">=</span> <span class="st">"Dx_FRLoverDEM"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>diag_lm_2_tidy<span class="sc">$</span>term[diag_lm_2_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisRES"</span>] <span class="ot">=</span> <span class="st">"Dx_RESoverDEM"</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(diag_lm_2_tidy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">response</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_RESoverDEM</td>
+<td style="text-align: right;">-0.0243213</td>
+<td style="text-align: right;">0.0899066</td>
+<td style="text-align: right;">-0.2705176</td>
+<td style="text-align: right;">0.7873680</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_FRLoverDEM</td>
+<td style="text-align: right;">-0.0033040</td>
+<td style="text-align: right;">0.0909673</td>
+<td style="text-align: right;">-0.0363203</td>
+<td style="text-align: right;">0.9711057</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Dx_RESoverDEM</td>
+<td style="text-align: right;">0.0495169</td>
+<td style="text-align: right;">0.0558257</td>
+<td style="text-align: right;">0.8869921</td>
+<td style="text-align: right;">0.3773960</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Dx_FRLoverDEM</td>
+<td style="text-align: right;">0.0343969</td>
+<td style="text-align: right;">0.0564843</td>
+<td style="text-align: right;">0.6089629</td>
+<td style="text-align: right;">0.5440498</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q15555.3</td>
+<td style="text-align: left;">Dx_RESoverDEM</td>
+<td style="text-align: right;">-0.0212622</td>
+<td style="text-align: right;">0.0945710</td>
+<td style="text-align: right;">-0.2248274</td>
+<td style="text-align: right;">0.8226121</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q15555.3</td>
+<td style="text-align: left;">Dx_FRLoverDEM</td>
+<td style="text-align: right;">-0.0832540</td>
+<td style="text-align: right;">0.0956867</td>
+<td style="text-align: right;">-0.8700678</td>
+<td style="text-align: right;">0.3865278</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>The <code>estimate</code> column represents the regression coefficient i.e.&nbsp;the magnitude and direction of the effect of the predictor variable (diagnosis) on the outcome variable (protein expression levels). Because the response variable (protein expression) is log2-transformed during modelling, <code>estimate</code> represents the log2-transformed difference in the outcome variable between the test group and the reference group i.e.&nbsp;log2 fold change (logFC).</p>
@@ -64578,75 +64888,237 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="linear-model-relative-to-res">Linear model (relative to Res)</h3>
 <p>Set the reference for diagnosis group so that all comparisons are relative to the RES category.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert Project.diagnosis to a factor and set "N" (normal) as the reference level</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>to_model<span class="sc">$</span>Project.diagnosis <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">as.character</span>(to_model<span class="sc">$</span>Project.diagnosis), <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"RES"</span>,<span class="st">"FRL"</span>,<span class="st">"N"</span>,<span class="st">"DEM_AD"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert Project.diagnosis to a factor and set "N" (normal) as the reference level</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>to_model<span class="sc">$</span>Project.diagnosis <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">as.character</span>(to_model<span class="sc">$</span>Project.diagnosis), <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"RES"</span>,<span class="st">"FRL"</span>,<span class="st">"N"</span>,<span class="st">"DEM_AD"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Perform the linear model on log-transformed protein expression levels (to satisfy assumptions of normality).</p>
 <p>Fit a model for each protein using the predictors: <code>Project.diagnosis</code>, <code>Sex</code>, <code>Education</code>, <code>Age_at_death</code>, and <code>Post_mortem_interval</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>diag_lm_3 <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">log2</span>(<span class="fu">as.matrix</span>(to_model[ ,<span class="dv">21</span><span class="sc">:</span><span class="fu">ncol</span>(to_model)])) <span class="sc">~</span> Project.diagnosis <span class="sc">+</span> Sex <span class="sc">+</span> Education <span class="sc">+</span> Age_at_death <span class="sc">+</span> Post_mortem_interval, <span class="at">data =</span> to_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>diag_lm_3 <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">log2</span>(<span class="fu">as.matrix</span>(to_model[ ,<span class="dv">21</span><span class="sc">:</span><span class="fu">ncol</span>(to_model)])) <span class="sc">~</span> Project.diagnosis <span class="sc">+</span> Sex <span class="sc">+</span> Education <span class="sc">+</span> Age_at_death <span class="sc">+</span> Post_mortem_interval, <span class="at">data =</span> to_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Tidy the results and filter for comparisons not saved so far.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy into a more structured dataframe using tidy() from the broom package</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>diag_lm_3_tidy <span class="ot">=</span> <span class="fu">tidy</span>(diag_lm_3) <span class="sc">%&gt;%</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(diag_lm_3_tidy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 6
-  response term                 estimate std.error statistic p.value
-  &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 P17600   Project.diagnosisFRL   0.0210    0.0913     0.230   0.818
-2 Q9H2G2   Project.diagnosisFRL  -0.0151    0.0567    -0.267   0.790
-3 Q15555.3 Project.diagnosisFRL  -0.0620    0.0960    -0.646   0.520
-4 Q9NZJ6   Project.diagnosisFRL  -0.0284    0.122     -0.232   0.817
-5 Q9UL25   Project.diagnosisFRL   0.0875    0.102      0.854   0.395
-6 Q7L0J3   Project.diagnosisFRL   0.0378    0.129      0.294   0.769</code></pre>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy into a more structured dataframe using tidy() from the broom package</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>diag_lm_3_tidy <span class="ot">=</span> <span class="fu">tidy</span>(diag_lm_3) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(diag_lm_3_tidy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 29%">
+<col style="width: 15%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">response</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">0.0210174</td>
+<td style="text-align: right;">0.0912687</td>
+<td style="text-align: right;">0.2302801</td>
+<td style="text-align: right;">0.8183854</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">-0.0151201</td>
+<td style="text-align: right;">0.0566714</td>
+<td style="text-align: right;">-0.2668026</td>
+<td style="text-align: right;">0.7902182</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q15555.3</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">-0.0619918</td>
+<td style="text-align: right;">0.0960037</td>
+<td style="text-align: right;">-0.6457228</td>
+<td style="text-align: right;">0.5200662</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9NZJ6</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">-0.0284313</td>
+<td style="text-align: right;">0.1224792</td>
+<td style="text-align: right;">-0.2321320</td>
+<td style="text-align: right;">0.8169511</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q9UL25</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">0.0874692</td>
+<td style="text-align: right;">0.1023666</td>
+<td style="text-align: right;">0.8544697</td>
+<td style="text-align: right;">0.3950643</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q7L0J3</td>
+<td style="text-align: left;">Project.diagnosisFRL</td>
+<td style="text-align: right;">0.0377753</td>
+<td style="text-align: right;">0.1285179</td>
+<td style="text-align: right;">0.2939300</td>
+<td style="text-align: right;">0.7694735</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Rename the terms comparing the diagnosis groups to Res.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>diag_lm_3_tidy<span class="sc">$</span>term[diag_lm_3_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>] <span class="ot">=</span> <span class="st">"Dx_FRLoverRES"</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(diag_lm_3_tidy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 6
-  response term          estimate std.error statistic p.value
-  &lt;chr&gt;    &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 P17600   Dx_FRLoverRES   0.0210    0.0913     0.230   0.818
-2 Q9H2G2   Dx_FRLoverRES  -0.0151    0.0567    -0.267   0.790
-3 Q15555.3 Dx_FRLoverRES  -0.0620    0.0960    -0.646   0.520
-4 Q9NZJ6   Dx_FRLoverRES  -0.0284    0.122     -0.232   0.817
-5 Q9UL25   Dx_FRLoverRES   0.0875    0.102      0.854   0.395
-6 Q7L0J3   Dx_FRLoverRES   0.0378    0.129      0.294   0.769</code></pre>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>diag_lm_3_tidy<span class="sc">$</span>term[diag_lm_3_tidy<span class="sc">$</span>term <span class="sc">==</span> <span class="st">"Project.diagnosisFRL"</span>] <span class="ot">=</span> <span class="st">"Dx_FRLoverRES"</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(diag_lm_3_tidy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">response</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_FRLoverRES</td>
+<td style="text-align: right;">0.0210174</td>
+<td style="text-align: right;">0.0912687</td>
+<td style="text-align: right;">0.2302801</td>
+<td style="text-align: right;">0.8183854</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Dx_FRLoverRES</td>
+<td style="text-align: right;">-0.0151201</td>
+<td style="text-align: right;">0.0566714</td>
+<td style="text-align: right;">-0.2668026</td>
+<td style="text-align: right;">0.7902182</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q15555.3</td>
+<td style="text-align: left;">Dx_FRLoverRES</td>
+<td style="text-align: right;">-0.0619918</td>
+<td style="text-align: right;">0.0960037</td>
+<td style="text-align: right;">-0.6457228</td>
+<td style="text-align: right;">0.5200662</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9NZJ6</td>
+<td style="text-align: left;">Dx_FRLoverRES</td>
+<td style="text-align: right;">-0.0284313</td>
+<td style="text-align: right;">0.1224792</td>
+<td style="text-align: right;">-0.2321320</td>
+<td style="text-align: right;">0.8169511</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q9UL25</td>
+<td style="text-align: left;">Dx_FRLoverRES</td>
+<td style="text-align: right;">0.0874692</td>
+<td style="text-align: right;">0.1023666</td>
+<td style="text-align: right;">0.8544697</td>
+<td style="text-align: right;">0.3950643</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q7L0J3</td>
+<td style="text-align: left;">Dx_FRLoverRES</td>
+<td style="text-align: right;">0.0377753</td>
+<td style="text-align: right;">0.1285179</td>
+<td style="text-align: right;">0.2939300</td>
+<td style="text-align: right;">0.7694735</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </section>
 <section id="combine" class="level3">
 <h3 class="anchored" data-anchor-id="combine">Combine</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy <span class="ot">=</span> <span class="fu">rbind</span>(diag_lm_tidy, diag_lm_2_tidy, diag_lm_3_tidy)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy <span class="ot">=</span> diag_lm_tidy <span class="sc">%&gt;%</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">logFC =</span> estimate)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 39,240 × 6
-   response term                    logFC std.error statistic p.value
-   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
- 1 P17600   Dx_DEMoverN           0.0319    0.0896     0.356   0.723 
- 2 P17600   Dx_RESoverN           0.00758   0.0902     0.0841  0.933 
- 3 P17600   Dx_FRLoverN           0.0286    0.0912     0.314   0.754 
- 4 P17600   SexM                 -0.0549    0.0693    -0.792   0.430 
- 5 P17600   Education            -0.0175    0.00975   -1.79    0.0769
- 6 P17600   Age_at_death          0.00709   0.00592    1.20    0.234 
- 7 P17600   Post_mortem_interval -0.00559   0.00727   -0.768   0.444 
- 8 Q9H2G2   Dx_DEMoverN          -0.0394    0.0557    -0.708   0.481 
- 9 Q9H2G2   Dx_RESoverN           0.0101    0.0560     0.180   0.857 
-10 Q9H2G2   Dx_FRLoverN          -0.00502   0.0566    -0.0886  0.930 
-# ℹ 39,230 more rows</code></pre>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy <span class="ot">=</span> <span class="fu">rbind</span>(diag_lm_tidy, diag_lm_2_tidy, diag_lm_3_tidy)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>diag_lm_tidy <span class="ot">=</span> diag_lm_tidy <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">logFC =</span> estimate)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(diag_lm_tidy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">response</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">logFC</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">0.0319053</td>
+<td style="text-align: right;">0.0896484</td>
+<td style="text-align: right;">0.3558931</td>
+<td style="text-align: right;">0.7227354</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_RESoverN</td>
+<td style="text-align: right;">0.0075839</td>
+<td style="text-align: right;">0.0902155</td>
+<td style="text-align: right;">0.0840647</td>
+<td style="text-align: right;">0.9331876</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_FRLoverN</td>
+<td style="text-align: right;">0.0286013</td>
+<td style="text-align: right;">0.0911693</td>
+<td style="text-align: right;">0.3137165</td>
+<td style="text-align: right;">0.7544465</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">SexM</td>
+<td style="text-align: right;">-0.0549264</td>
+<td style="text-align: right;">0.0693225</td>
+<td style="text-align: right;">-0.7923316</td>
+<td style="text-align: right;">0.4302057</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Education</td>
+<td style="text-align: right;">-0.0174520</td>
+<td style="text-align: right;">0.0097535</td>
+<td style="text-align: right;">-1.7893112</td>
+<td style="text-align: right;">0.0768554</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Age_at_death</td>
+<td style="text-align: right;">0.0070911</td>
+<td style="text-align: right;">0.0059166</td>
+<td style="text-align: right;">1.1985056</td>
+<td style="text-align: right;">0.2337984</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </section>
@@ -64655,83 +65127,341 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="create-a-dataframe-summarising-the-differential-expression-of-proteins-by-diagnosis">Create a dataframe summarising the differential expression of proteins by diagnosis</h2>
 <p>Filter the <code>diag_lm_tidy</code> dataframe for the diagnosis category.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>de_diagnosis <span class="ot">=</span> diag_lm_tidy <span class="sc">%&gt;%</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_FRLoverDEM"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_FRLoverN"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_FRLoverRES"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_RESoverDEM"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_RESoverN"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>de_diagnosis <span class="ot">=</span> diag_lm_tidy <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_FRLoverDEM"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_FRLoverN"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_FRLoverRES"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_RESoverDEM"</span> <span class="sc">|</span> term <span class="sc">==</span> <span class="st">"Dx_RESoverN"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="p-value-adjustment" class="level3">
 <h3 class="anchored" data-anchor-id="p-value-adjustment">p-value adjustment</h3>
 <p>Apply the Benjamini-Hochberg (BH) method to control the False Discovery Rate (FDR) for the p-values (<code>padj</code>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>de_diagnosis<span class="sc">$</span>padj <span class="ot">=</span> <span class="fu">p.adjust</span>(de_diagnosis<span class="sc">$</span>p.value, <span class="at">method=</span><span class="st">"BH"</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(de_diagnosis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 7
-  response term           logFC std.error statistic p.value  padj
-  &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
-1 P17600   Dx_DEMoverN  0.0319     0.0896    0.356    0.723 0.921
-2 P17600   Dx_RESoverN  0.00758    0.0902    0.0841   0.933 0.983
-3 P17600   Dx_FRLoverN  0.0286     0.0912    0.314    0.754 0.933
-4 Q9H2G2   Dx_DEMoverN -0.0394     0.0557   -0.708    0.481 0.822
-5 Q9H2G2   Dx_RESoverN  0.0101     0.0560    0.180    0.857 0.964
-6 Q9H2G2   Dx_FRLoverN -0.00502    0.0566   -0.0886   0.930 0.982</code></pre>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>de_diagnosis<span class="sc">$</span>padj <span class="ot">=</span> <span class="fu">p.adjust</span>(de_diagnosis<span class="sc">$</span>p.value, <span class="at">method=</span><span class="st">"BH"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(de_diagnosis))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 16%">
+<col style="width: 15%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 13%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">response</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">logFC</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+<th style="text-align: right;">padj</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">0.0319053</td>
+<td style="text-align: right;">0.0896484</td>
+<td style="text-align: right;">0.3558931</td>
+<td style="text-align: right;">0.7227354</td>
+<td style="text-align: right;">0.9214623</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_RESoverN</td>
+<td style="text-align: right;">0.0075839</td>
+<td style="text-align: right;">0.0902155</td>
+<td style="text-align: right;">0.0840647</td>
+<td style="text-align: right;">0.9331876</td>
+<td style="text-align: right;">0.9833932</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_FRLoverN</td>
+<td style="text-align: right;">0.0286013</td>
+<td style="text-align: right;">0.0911693</td>
+<td style="text-align: right;">0.3137165</td>
+<td style="text-align: right;">0.7544465</td>
+<td style="text-align: right;">0.9332084</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-0.0394122</td>
+<td style="text-align: right;">0.0556654</td>
+<td style="text-align: right;">-0.7080196</td>
+<td style="text-align: right;">0.4807230</td>
+<td style="text-align: right;">0.8220018</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Dx_RESoverN</td>
+<td style="text-align: right;">0.0101048</td>
+<td style="text-align: right;">0.0560174</td>
+<td style="text-align: right;">0.1803861</td>
+<td style="text-align: right;">0.8572462</td>
+<td style="text-align: right;">0.9643151</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Dx_FRLoverN</td>
+<td style="text-align: right;">-0.0050153</td>
+<td style="text-align: right;">0.0566097</td>
+<td style="text-align: right;">-0.0885947</td>
+<td style="text-align: right;">0.9295966</td>
+<td style="text-align: right;">0.9818321</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Add significance labels and direction of change.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>de_diagnosis<span class="sc">$</span>significant <span class="ot">=</span> <span class="fu">ifelse</span>(de_diagnosis<span class="sc">$</span>padj <span class="sc">&lt;=</span> <span class="fl">0.05</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>de_diagnosis<span class="sc">$</span>direction <span class="ot">=</span> <span class="fu">ifelse</span>(de_diagnosis<span class="sc">$</span>logFC <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">"Increase"</span>, <span class="st">"Decrease"</span>)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(de_diagnosis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 9
-  response term           logFC std.error statistic p.value  padj significant
-  &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;      
-1 P17600   Dx_DEMoverN  0.0319     0.0896    0.356    0.723 0.921 No         
-2 P17600   Dx_RESoverN  0.00758    0.0902    0.0841   0.933 0.983 No         
-3 P17600   Dx_FRLoverN  0.0286     0.0912    0.314    0.754 0.933 No         
-4 Q9H2G2   Dx_DEMoverN -0.0394     0.0557   -0.708    0.481 0.822 No         
-5 Q9H2G2   Dx_RESoverN  0.0101     0.0560    0.180    0.857 0.964 No         
-6 Q9H2G2   Dx_FRLoverN -0.00502    0.0566   -0.0886   0.930 0.982 No         
-# ℹ 1 more variable: direction &lt;chr&gt;</code></pre>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>de_diagnosis<span class="sc">$</span>significant <span class="ot">=</span> <span class="fu">ifelse</span>(de_diagnosis<span class="sc">$</span>padj <span class="sc">&lt;=</span> <span class="fl">0.05</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>de_diagnosis<span class="sc">$</span>direction <span class="ot">=</span> <span class="fu">ifelse</span>(de_diagnosis<span class="sc">$</span>logFC <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">"Increase"</span>, <span class="st">"Decrease"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(de_diagnosis))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 12%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 12%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">response</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">logFC</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+<th style="text-align: right;">padj</th>
+<th style="text-align: left;">significant</th>
+<th style="text-align: left;">direction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">0.0319053</td>
+<td style="text-align: right;">0.0896484</td>
+<td style="text-align: right;">0.3558931</td>
+<td style="text-align: right;">0.7227354</td>
+<td style="text-align: right;">0.9214623</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Increase</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_RESoverN</td>
+<td style="text-align: right;">0.0075839</td>
+<td style="text-align: right;">0.0902155</td>
+<td style="text-align: right;">0.0840647</td>
+<td style="text-align: right;">0.9331876</td>
+<td style="text-align: right;">0.9833932</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Increase</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P17600</td>
+<td style="text-align: left;">Dx_FRLoverN</td>
+<td style="text-align: right;">0.0286013</td>
+<td style="text-align: right;">0.0911693</td>
+<td style="text-align: right;">0.3137165</td>
+<td style="text-align: right;">0.7544465</td>
+<td style="text-align: right;">0.9332084</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Increase</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-0.0394122</td>
+<td style="text-align: right;">0.0556654</td>
+<td style="text-align: right;">-0.7080196</td>
+<td style="text-align: right;">0.4807230</td>
+<td style="text-align: right;">0.8220018</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Dx_RESoverN</td>
+<td style="text-align: right;">0.0101048</td>
+<td style="text-align: right;">0.0560174</td>
+<td style="text-align: right;">0.1803861</td>
+<td style="text-align: right;">0.8572462</td>
+<td style="text-align: right;">0.9643151</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Increase</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9H2G2</td>
+<td style="text-align: left;">Dx_FRLoverN</td>
+<td style="text-align: right;">-0.0050153</td>
+<td style="text-align: right;">0.0566097</td>
+<td style="text-align: right;">-0.0885947</td>
+<td style="text-align: right;">0.9295966</td>
+<td style="text-align: right;">0.9818321</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Merge with protein metadata.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Match UniprotAccession from protein_IDs with response from de_diagnosis</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>de_diagnosis <span class="ot">=</span> <span class="fu">merge</span>(protein_IDs, de_diagnosis, <span class="at">by.x=</span><span class="st">"UniprotAccession"</span>, <span class="at">by.y=</span><span class="st">"response"</span>)</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(de_diagnosis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  UniprotAccession            ProteinID UniprotProteinName GeneName
-1           A0AVT1 sp|A0AVT1|UBA6_HUMAN         UBA6_HUMAN     UBA6
-2           A0AVT1 sp|A0AVT1|UBA6_HUMAN         UBA6_HUMAN     UBA6
-3           A0AVT1 sp|A0AVT1|UBA6_HUMAN         UBA6_HUMAN     UBA6
-4           A0AVT1 sp|A0AVT1|UBA6_HUMAN         UBA6_HUMAN     UBA6
-5           A0AVT1 sp|A0AVT1|UBA6_HUMAN         UBA6_HUMAN     UBA6
-6           A0AVT1 sp|A0AVT1|UBA6_HUMAN         UBA6_HUMAN     UBA6
-                           ProteinDescription          term       logFC
-1 Ubiquitin-like modifier-activating enzyme 6 Dx_FRLoverRES -0.10920691
-2 Ubiquitin-like modifier-activating enzyme 6   Dx_DEMoverN  0.10291127
-3 Ubiquitin-like modifier-activating enzyme 6 Dx_RESoverDEM -0.03218008
-4 Ubiquitin-like modifier-activating enzyme 6 Dx_FRLoverDEM -0.14138699
-5 Ubiquitin-like modifier-activating enzyme 6   Dx_RESoverN  0.07073119
-6 Ubiquitin-like modifier-activating enzyme 6   Dx_FRLoverN -0.03847572
-   std.error  statistic    p.value      padj significant direction
-1 0.06943197 -1.5728619 0.11918369 0.5212820          No  Decrease
-2 0.06819937  1.5089768 0.13473145 0.5404695          No  Increase
-3 0.06839579 -0.4704980 0.63911280 0.8913885          No  Decrease
-4 0.06920271 -2.0430844 0.04390463 0.3702331          No  Decrease
-5 0.06863073  1.0306053 0.30542777 0.7079141          No  Increase
-6 0.06935632 -0.5547543 0.58040893 0.8700037          No  Decrease</code></pre>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Match UniprotAccession from protein_IDs with response from de_diagnosis</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>de_diagnosis <span class="ot">=</span> <span class="fu">merge</span>(protein_IDs, de_diagnosis, <span class="at">by.x=</span><span class="st">"UniprotAccession"</span>, <span class="at">by.y=</span><span class="st">"response"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(de_diagnosis))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 9%">
+<col style="width: 4%">
+<col style="width: 21%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">UniprotAccession</th>
+<th style="text-align: left;">ProteinID</th>
+<th style="text-align: left;">UniprotProteinName</th>
+<th style="text-align: left;">GeneName</th>
+<th style="text-align: left;">ProteinDescription</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">logFC</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+<th style="text-align: right;">padj</th>
+<th style="text-align: left;">significant</th>
+<th style="text-align: left;">direction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">A0AVT1</td>
+<td style="text-align: left;">sp|A0AVT1|UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6</td>
+<td style="text-align: left;">Ubiquitin-like modifier-activating enzyme 6</td>
+<td style="text-align: left;">Dx_FRLoverRES</td>
+<td style="text-align: right;">-0.1092069</td>
+<td style="text-align: right;">0.0694320</td>
+<td style="text-align: right;">-1.5728619</td>
+<td style="text-align: right;">0.1191837</td>
+<td style="text-align: right;">0.5212820</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A0AVT1</td>
+<td style="text-align: left;">sp|A0AVT1|UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6</td>
+<td style="text-align: left;">Ubiquitin-like modifier-activating enzyme 6</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">0.1029113</td>
+<td style="text-align: right;">0.0681994</td>
+<td style="text-align: right;">1.5089768</td>
+<td style="text-align: right;">0.1347314</td>
+<td style="text-align: right;">0.5404695</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Increase</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A0AVT1</td>
+<td style="text-align: left;">sp|A0AVT1|UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6</td>
+<td style="text-align: left;">Ubiquitin-like modifier-activating enzyme 6</td>
+<td style="text-align: left;">Dx_RESoverDEM</td>
+<td style="text-align: right;">-0.0321801</td>
+<td style="text-align: right;">0.0683958</td>
+<td style="text-align: right;">-0.4704980</td>
+<td style="text-align: right;">0.6391128</td>
+<td style="text-align: right;">0.8913885</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A0AVT1</td>
+<td style="text-align: left;">sp|A0AVT1|UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6</td>
+<td style="text-align: left;">Ubiquitin-like modifier-activating enzyme 6</td>
+<td style="text-align: left;">Dx_FRLoverDEM</td>
+<td style="text-align: right;">-0.1413870</td>
+<td style="text-align: right;">0.0692027</td>
+<td style="text-align: right;">-2.0430844</td>
+<td style="text-align: right;">0.0439046</td>
+<td style="text-align: right;">0.3702331</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A0AVT1</td>
+<td style="text-align: left;">sp|A0AVT1|UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6</td>
+<td style="text-align: left;">Ubiquitin-like modifier-activating enzyme 6</td>
+<td style="text-align: left;">Dx_RESoverN</td>
+<td style="text-align: right;">0.0707312</td>
+<td style="text-align: right;">0.0686307</td>
+<td style="text-align: right;">1.0306053</td>
+<td style="text-align: right;">0.3054278</td>
+<td style="text-align: right;">0.7079141</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Increase</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A0AVT1</td>
+<td style="text-align: left;">sp|A0AVT1|UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6_HUMAN</td>
+<td style="text-align: left;">UBA6</td>
+<td style="text-align: left;">Ubiquitin-like modifier-activating enzyme 6</td>
+<td style="text-align: left;">Dx_FRLoverN</td>
+<td style="text-align: right;">-0.0384757</td>
+<td style="text-align: right;">0.0693563</td>
+<td style="text-align: right;">-0.5547543</td>
+<td style="text-align: right;">0.5804089</td>
+<td style="text-align: right;">0.8700037</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Sort by adjusted p-value.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>de_diagnosis <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(padj)</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(de_diagnosis))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>de_diagnosis <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(padj)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(de_diagnosis))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -64866,65 +65596,143 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="summary-table">Summary table</h3>
 <p>Create a summary table of proteins with significant differences.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>sig_summary_table <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(significant <span class="sc">==</span> <span class="st">"Yes"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(term, direction) <span class="sc">%&gt;%</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span> (<span class="at">n =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>sig_summary_table <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(significant <span class="sc">==</span> <span class="st">"Yes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(term, direction) <span class="sc">%&gt;%</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span> (<span class="at">n =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`summarise()` has grouped output by 'term'. You can override using the
 `.groups` argument.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>sig_summary_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 3
-# Groups:   term [6]
-   term          direction     n
-   &lt;chr&gt;         &lt;chr&gt;     &lt;int&gt;
- 1 Dx_DEMoverN   Decrease     71
- 2 Dx_DEMoverN   Increase     26
- 3 Dx_FRLoverDEM Decrease     10
- 4 Dx_FRLoverDEM Increase     22
- 5 Dx_FRLoverN   Decrease      4
- 6 Dx_FRLoverN   Increase      6
- 7 Dx_FRLoverRES Decrease      1
- 8 Dx_FRLoverRES Increase      3
- 9 Dx_RESoverDEM Decrease      3
-10 Dx_RESoverN   Increase      3</code></pre>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sig_summary_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: left;">direction</th>
+<th style="text-align: right;">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: left;">Decrease</td>
+<td style="text-align: right;">71</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: left;">Increase</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dx_FRLoverDEM</td>
+<td style="text-align: left;">Decrease</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dx_FRLoverDEM</td>
+<td style="text-align: left;">Increase</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dx_FRLoverN</td>
+<td style="text-align: left;">Decrease</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dx_FRLoverN</td>
+<td style="text-align: left;">Increase</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dx_FRLoverRES</td>
+<td style="text-align: left;">Decrease</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dx_FRLoverRES</td>
+<td style="text-align: left;">Increase</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dx_RESoverDEM</td>
+<td style="text-align: left;">Decrease</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dx_RESoverN</td>
+<td style="text-align: left;">Increase</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Tidy the table.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>sig_summary_table <span class="ot">=</span> sig_summary_table <span class="sc">%&gt;%</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert direction column into two separate columns with their respective n counts in each column</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(direction, n) <span class="sc">%&gt;%</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename the variable column name</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Variable =</span> term) <span class="sc">%&gt;%</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename the values in the variable column</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Variable =</span> <span class="fu">recode</span>(Variable,</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_DEMoverN"</span><span class="ot">=</span><span class="st">"Dx Dementia-AD vs Normal"</span>,</span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverDEM"</span><span class="ot">=</span><span class="st">"Dx Frail vs Dementia-AD"</span>,</span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverN"</span><span class="ot">=</span><span class="st">"Dx Frail vs Normal"</span>,</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverRES"</span><span class="ot">=</span><span class="st">"Dx Frail vs Resilient"</span>,</span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_RESoverDEM"</span><span class="ot">=</span><span class="st">"Dx Resilient vs Dementia-AD"</span>,</span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_RESoverN"</span><span class="ot">=</span><span class="st">"Dx Resilient vs Normal"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Replace NAs with 0</span></span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reorder columns</span></span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Variable, Increase, Decrease)</span>
-<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>sig_summary_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 3
-# Groups:   Variable [6]
-  Variable                    Increase Decrease
-  &lt;chr&gt;                          &lt;int&gt;    &lt;int&gt;
-1 Dx Dementia-AD vs Normal          26       71
-2 Dx Frail vs Dementia-AD           22       10
-3 Dx Frail vs Normal                 6        4
-4 Dx Frail vs Resilient              3        1
-5 Dx Resilient vs Dementia-AD        0        3
-6 Dx Resilient vs Normal             3        0</code></pre>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sig_summary_table <span class="ot">=</span> sig_summary_table <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert direction column into two separate columns with their respective n counts in each column</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(direction, n) <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename the variable column name</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Variable =</span> term) <span class="sc">%&gt;%</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename the values in the variable column</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Variable =</span> <span class="fu">recode</span>(Variable,</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_DEMoverN"</span><span class="ot">=</span><span class="st">"Dx Dementia-AD vs Normal"</span>,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverDEM"</span><span class="ot">=</span><span class="st">"Dx Frail vs Dementia-AD"</span>,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverN"</span><span class="ot">=</span><span class="st">"Dx Frail vs Normal"</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverRES"</span><span class="ot">=</span><span class="st">"Dx Frail vs Resilient"</span>,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_RESoverDEM"</span><span class="ot">=</span><span class="st">"Dx Resilient vs Dementia-AD"</span>,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_RESoverN"</span><span class="ot">=</span><span class="st">"Dx Resilient vs Normal"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Replace NAs with 0</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reorder columns</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Variable, Increase, Decrease)</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sig_summary_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable</th>
+<th style="text-align: right;">Increase</th>
+<th style="text-align: right;">Decrease</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Dx Dementia-AD vs Normal</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">71</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dx Frail vs Dementia-AD</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dx Frail vs Normal</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dx Frail vs Resilient</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dx Resilient vs Dementia-AD</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dx Resilient vs Normal</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </section>
@@ -64934,73 +65742,339 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Create a heatmap of significant proteins for DEM vs NOR.</p>
 <p>Filter for significant proteins for DEM vs NOR.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(significant <span class="sc">==</span> <span class="st">"Yes"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span>)</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set as characters</span></span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR<span class="sc">$</span>UniprotAccession <span class="ot">=</span> <span class="fu">as.character</span>(sig_DEMvsNOR<span class="sc">$</span>UniprotAccession)</span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR<span class="sc">$</span>GeneName <span class="ot">=</span> <span class="fu">as.character</span>(sig_DEMvsNOR<span class="sc">$</span>GeneName)</span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sig_DEMvsNOR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  UniprotAccession             ProteinID UniprotProteinName GeneName
-1           O15240   sp|O15240|VGF_HUMAN          VGF_HUMAN      VGF
-2           Q9Y2J0  sp|Q9Y2J0|RP3A_HUMAN         RP3A_HUMAN    RPH3A
-3           P49619  sp|P49619|DGKG_HUMAN         DGKG_HUMAN     DGKG
-4           Q96PB7  sp|Q96PB7|NOE3_HUMAN         NOE3_HUMAN    OLFM3
-5           Q16630 sp|Q16630|CPSF6_HUMAN        CPSF6_HUMAN    CPSF6
-6           Q9NR22  sp|Q9NR22|ANM8_HUMAN         ANM8_HUMAN    PRMT8
-                                         ProteinDescription        term
-1                                Neurosecretory protein VGF Dx_DEMoverN
-2                                              Rabphilin-3A Dx_DEMoverN
-3                               Diacylglycerol kinase gamma Dx_DEMoverN
-4                                                  Noelin-3 Dx_DEMoverN
-5 Cleavage and polyadenylation specificity factor subunit 6 Dx_DEMoverN
-6                    Protein arginine N-methyltransferase 8 Dx_DEMoverN
-       logFC  std.error statistic      p.value         padj significant
-1 -1.0497628 0.14834935 -7.076288 2.856204e-10 6.724646e-06         Yes
-2 -0.6088561 0.09275838 -6.563894 3.047851e-09 3.587930e-05         Yes
-3  0.3484299 0.05697798  6.115167 2.310431e-08 1.797738e-04         Yes
-4 -0.5685180 0.09393239 -6.052417 3.054261e-08 1.797738e-04         Yes
-5  0.5135081 0.08818556  5.823041 8.390843e-08 3.729729e-04         Yes
-6 -0.3460503 0.05972054 -5.794494 9.504916e-08 3.729729e-04         Yes
-  direction
-1  Decrease
-2  Decrease
-3  Increase
-4  Decrease
-5  Increase
-6  Decrease</code></pre>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(significant <span class="sc">==</span> <span class="st">"Yes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set as characters</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR<span class="sc">$</span>UniprotAccession <span class="ot">=</span> <span class="fu">as.character</span>(sig_DEMvsNOR<span class="sc">$</span>UniprotAccession)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR<span class="sc">$</span>GeneName <span class="ot">=</span> <span class="fu">as.character</span>(sig_DEMvsNOR<span class="sc">$</span>GeneName)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(sig_DEMvsNOR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 14%">
+<col style="width: 8%">
+<col style="width: 4%">
+<col style="width: 26%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">UniprotAccession</th>
+<th style="text-align: left;">ProteinID</th>
+<th style="text-align: left;">UniprotProteinName</th>
+<th style="text-align: left;">GeneName</th>
+<th style="text-align: left;">ProteinDescription</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">logFC</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+<th style="text-align: right;">padj</th>
+<th style="text-align: left;">significant</th>
+<th style="text-align: left;">direction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">O15240</td>
+<td style="text-align: left;">sp|O15240|VGF_HUMAN</td>
+<td style="text-align: left;">VGF_HUMAN</td>
+<td style="text-align: left;">VGF</td>
+<td style="text-align: left;">Neurosecretory protein VGF</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-1.0497628</td>
+<td style="text-align: right;">0.1483494</td>
+<td style="text-align: right;">-7.076288</td>
+<td style="text-align: right;">0e+00</td>
+<td style="text-align: right;">0.0000067</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9Y2J0</td>
+<td style="text-align: left;">sp|Q9Y2J0|RP3A_HUMAN</td>
+<td style="text-align: left;">RP3A_HUMAN</td>
+<td style="text-align: left;">RPH3A</td>
+<td style="text-align: left;">Rabphilin-3A</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-0.6088561</td>
+<td style="text-align: right;">0.0927584</td>
+<td style="text-align: right;">-6.563894</td>
+<td style="text-align: right;">0e+00</td>
+<td style="text-align: right;">0.0000359</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P49619</td>
+<td style="text-align: left;">sp|P49619|DGKG_HUMAN</td>
+<td style="text-align: left;">DGKG_HUMAN</td>
+<td style="text-align: left;">DGKG</td>
+<td style="text-align: left;">Diacylglycerol kinase gamma</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">0.3484299</td>
+<td style="text-align: right;">0.0569780</td>
+<td style="text-align: right;">6.115167</td>
+<td style="text-align: right;">0e+00</td>
+<td style="text-align: right;">0.0001798</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Increase</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q96PB7</td>
+<td style="text-align: left;">sp|Q96PB7|NOE3_HUMAN</td>
+<td style="text-align: left;">NOE3_HUMAN</td>
+<td style="text-align: left;">OLFM3</td>
+<td style="text-align: left;">Noelin-3</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-0.5685180</td>
+<td style="text-align: right;">0.0939324</td>
+<td style="text-align: right;">-6.052417</td>
+<td style="text-align: right;">0e+00</td>
+<td style="text-align: right;">0.0001798</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q16630</td>
+<td style="text-align: left;">sp|Q16630|CPSF6_HUMAN</td>
+<td style="text-align: left;">CPSF6_HUMAN</td>
+<td style="text-align: left;">CPSF6</td>
+<td style="text-align: left;">Cleavage and polyadenylation specificity factor subunit 6</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">0.5135081</td>
+<td style="text-align: right;">0.0881856</td>
+<td style="text-align: right;">5.823041</td>
+<td style="text-align: right;">1e-07</td>
+<td style="text-align: right;">0.0003730</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Increase</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9NR22</td>
+<td style="text-align: left;">sp|Q9NR22|ANM8_HUMAN</td>
+<td style="text-align: left;">ANM8_HUMAN</td>
+<td style="text-align: left;">PRMT8</td>
+<td style="text-align: left;">Protein arginine N-methyltransferase 8</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-0.3460503</td>
+<td style="text-align: right;">0.0597205</td>
+<td style="text-align: right;">-5.794494</td>
+<td style="text-align: right;">1e-07</td>
+<td style="text-align: right;">0.0003730</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Decrease</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Prepare the sample key.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for only DEM_AD and N samples</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>key_DEMvsNOR <span class="ot">=</span> sample_key <span class="sc">%&gt;%</span></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Project.diagnosis <span class="sc">==</span> <span class="st">"DEM_AD"</span> <span class="sc">|</span> Project.diagnosis <span class="sc">==</span> <span class="st">"N"</span>)</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(key_DEMvsNOR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 20
-  projid Project.diagnosis Batch Number Code  Sex   Education  MMSE Age_at_death
-  &lt;chr&gt;  &lt;chr&gt;             &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
-1 RUSH_… DEM_AD                1      1 A1    F            16    19         86.1
-2 RUSH_… N                     1      6 E6    F            13    25         98.7
-3 RUSH_… DEM_AD                1      5 G5    M            16     0         82.9
-4 RUSH_… DEM_AD                1      2 I2    M            20    27         88  
-5 RUSH_… N                     1     10 J10   M            14    29         86.7
-6 RUSH_… DEM_AD                1      2 J2    M            14    22         96.2
-# ℹ 11 more variables: Post_mortem_interval &lt;dbl&gt;, Apoe_genotype &lt;dbl&gt;,
-#   Cognitive_status &lt;chr&gt;, Global_cognition_last_visit &lt;dbl&gt;,
-#   NIA_reagan_score &lt;dbl&gt;, Braak_score &lt;dbl&gt;, Global_pathology_score &lt;dbl&gt;,
-#   Lewy_bodies_any &lt;dbl&gt;, TDP43_pathology &lt;dbl&gt;,
-#   Gross_cerebral_infarcts_any &lt;dbl&gt;, Microscopic_cerebral_infarcts_any &lt;dbl&gt;</code></pre>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for only DEM_AD and N samples</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>key_DEMvsNOR <span class="ot">=</span> sample_key <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Project.diagnosis <span class="sc">==</span> <span class="st">"DEM_AD"</span> <span class="sc">|</span> Project.diagnosis <span class="sc">==</span> <span class="st">"N"</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(key_DEMvsNOR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 9%">
+<col style="width: 5%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 9%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">projid</th>
+<th style="text-align: left;">Project.diagnosis</th>
+<th style="text-align: right;">Batch</th>
+<th style="text-align: right;">Number</th>
+<th style="text-align: left;">Code</th>
+<th style="text-align: left;">Sex</th>
+<th style="text-align: right;">Education</th>
+<th style="text-align: right;">MMSE</th>
+<th style="text-align: right;">Age_at_death</th>
+<th style="text-align: right;">Post_mortem_interval</th>
+<th style="text-align: right;">Apoe_genotype</th>
+<th style="text-align: left;">Cognitive_status</th>
+<th style="text-align: right;">Global_cognition_last_visit</th>
+<th style="text-align: right;">NIA_reagan_score</th>
+<th style="text-align: right;">Braak_score</th>
+<th style="text-align: right;">Global_pathology_score</th>
+<th style="text-align: right;">Lewy_bodies_any</th>
+<th style="text-align: right;">TDP43_pathology</th>
+<th style="text-align: right;">Gross_cerebral_infarcts_any</th>
+<th style="text-align: right;">Microscopic_cerebral_infarcts_any</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">RUSH_1442</td>
+<td style="text-align: left;">DEM_AD</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">A1</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">86.1</td>
+<td style="text-align: right;">19.416667</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: left;">Impaired</td>
+<td style="text-align: right;">-0.9699817</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.0816866</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RUSH_0857</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">E6</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">98.7</td>
+<td style="text-align: right;">3.916667</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: left;">Unimpaired</td>
+<td style="text-align: right;">0.0681502</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.4665655</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RUSH_0755</td>
+<td style="text-align: left;">DEM_AD</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">G5</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">82.9</td>
+<td style="text-align: right;">4.300000</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: left;">Impaired</td>
+<td style="text-align: right;">-3.9153472</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">3.1770126</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RUSH_0570</td>
+<td style="text-align: left;">DEM_AD</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">I2</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">88.0</td>
+<td style="text-align: right;">3.916667</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: left;">Impaired</td>
+<td style="text-align: right;">-0.7893906</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1.4367602</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RUSH_0034</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">J10</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">86.7</td>
+<td style="text-align: right;">3.883333</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: left;">Unimpaired</td>
+<td style="text-align: right;">-0.0476503</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.0092474</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RUSH_0592</td>
+<td style="text-align: left;">DEM_AD</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">J2</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">96.2</td>
+<td style="text-align: right;">5.050000</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: left;">Impaired</td>
+<td style="text-align: right;">-1.2047052</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.8446928</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create list of sample IDs (which is the Code column)</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>sampleID_DEMvsNOR <span class="ot">=</span> key_DEMvsNOR<span class="sc">$</span>Code</span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>sampleID_DEMvsNOR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create list of sample IDs (which is the Code column)</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sampleID_DEMvsNOR <span class="ot">=</span> key_DEMvsNOR<span class="sc">$</span>Code</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>sampleID_DEMvsNOR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "A1"  "E6"  "G5"  "I2"  "J10" "J2"  "B10" "C1"  "G7"  "H10" "A2"  "C8" 
 [13] "E2"  "F4"  "G2"  "I3"  "J8"  "B5"  "D9"  "E7"  "E5"  "F6"  "G1"  "D10"
@@ -65011,105 +66085,531 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Prepare the data for heatmap. Create a subset of <code>TMT_data</code> with expression data for the samples and filter to significant proteins.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>for_heatmaps_DEMvsNOR <span class="ot">=</span> TMT_data <span class="sc">%&gt;%</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select relevant columns</span></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, GeneName, A1<span class="sc">:</span>J9) <span class="sc">%&gt;%</span></span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter to only include proteins in sig_DEMvsNOR - keep rows where the value UniprotAccession column is found in UniprotAccession column in sig_DEMvsNOR</span></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(UniprotAccession <span class="sc">%in%</span> sig_DEMvsNOR<span class="sc">$</span>UniprotAccession) <span class="sc">%&gt;%</span></span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove UniprotAccession column</span></span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>UniprotAccession) <span class="sc">%&gt;%</span></span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set GeneName column as row names</span></span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="st">"GeneName"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select releavnt columns based on sample IDs found the in the filtered sample ID list</span></span>
-<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(sampleID_DEMvsNOR))</span>
-<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(for_heatmaps_DEMvsNOR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>              A1       E6       G5       I2       J10       J2      B10
-NBAS    832889.2 784479.1 753785.9 846008.8  841958.9 642983.3 915164.0
-CEP170B 696550.1 846008.8 773105.1 755830.5 1077925.2 920412.8 738896.9
-NPEPPS  714522.9 820041.9 914790.6 886666.2  719191.3 782091.8 784178.4
-CFL1    985519.4 814322.4 845878.8 776617.8  800807.4 775023.7 989159.2
-BSN     530919.7 846076.5 846436.6 889481.8 1218898.6 922020.7 566209.0
-ATP8A1  654957.1 613369.5 659219.5 862817.5  912675.3 798298.1 689566.3
-               C1       G7       H10        A2        C8        E2        F4
-NBAS     914493.7 722010.0  701666.6  752228.3  821178.1  736876.8  817938.7
-CEP170B  925978.8 864331.0  644102.9  667829.6  655469.3  826476.9  841003.4
-NPEPPS   611402.3 796221.3 1158339.8 1039126.0 1335543.2  714301.7  970962.8
-CFL1    1021005.2 862508.4 1228210.2  924297.5  977953.5  712306.6 1073803.3
-BSN      795198.9 800483.8  690870.4  731639.1  682707.4  745006.3  845001.2
-ATP8A1   669601.6 913929.0 1003973.1 1111878.5 1190518.0 1148976.7 1145030.5
-               G2        I3       J8        B5       D9       E7        E5
-NBAS     790799.0  681383.1 805286.5  767230.7 802739.3 849942.7  881897.7
-CEP170B  833971.4  720301.6 795952.4  717904.3 893961.8 870230.2 1050533.4
-NPEPPS   751801.6 1032293.3 579369.4  893085.8 873781.2 699272.6  564704.7
-CFL1    1180519.2  952020.2 658127.0  856178.7 827279.7 749858.5  577226.7
-BSN      787442.4  755699.3 897867.2  773148.3 914948.5 883398.2 1152849.3
-ATP8A1   894967.0 1419182.4 828432.9 1070102.5 874000.5 683980.2  751041.0
-               F6        G1       D10        D8       I6        A7       C2
-NBAS     733606.2  858689.2  769264.8  702213.9 894098.6  924760.1 857577.5
-CEP170B  663481.4  920222.2  888452.4  752867.4 885309.2  760458.4 758875.5
-NPEPPS  1139546.6  904888.4  621807.4  895439.2 628193.5  894924.0 772999.3
-CFL1    1128674.2  816618.9 1207531.8  912636.5 596237.2 1076310.8 850443.6
-BSN      744842.0 1057582.4  950279.9  670379.9 868443.3  779338.4 977543.1
-ATP8A1   929958.3  640951.1  724683.8 1138971.7 745938.6  783911.5 687694.2
-              C6       D5        H9        I1        C7       G6        H5
-NBAS    788550.2 724891.9  741004.3  898816.1  791288.4 720692.3  795864.7
-CEP170B 671841.8 855212.1  694294.3  793883.4  667856.8 750331.4  796984.0
-NPEPPS  794915.1 728429.9  905284.0 1068223.6 1145416.5 738928.9 1113425.9
-CFL1    986780.6 833936.5  947779.1  940502.0 1011685.2 792322.2  668805.5
-BSN     680185.9 933241.1  605167.4  842562.7  627240.2 783039.5  876770.8
-ATP8A1  834270.4 699222.9 1079954.9  981338.9  878893.8 686633.8  744714.3
-               A3       B8       I7        A8        E1        H4       J7
-NBAS     857231.7 950814.3 892047.4 1137231.4  683256.2  759389.2 730808.3
-CEP170B  662701.1 945771.2 753890.7  691745.9  895834.3  962610.5 991219.9
-NPEPPS  1130547.5 790695.4 674256.4 1060706.8 1111317.2  934226.4 781516.0
-CFL1    1241638.1 694443.1 674502.1 1216280.4  801919.2  741783.6 570244.0
-BSN      605638.4 970483.8 735500.0  825549.2  920162.2 1116828.8 911875.2
-ATP8A1   833100.0 651980.1 711773.6  744871.1  815807.1  722674.7 804256.3
-               B4        B9      F10       F9       H3        J9        D4
-NBAS     882040.5  773340.9 831183.0 875094.7 956301.2  904288.1  650675.2
-CEP170B  716623.4  934259.4 831870.3 794966.7 828596.7  919087.7  946335.7
-NPEPPS  1049193.0  664859.7 652782.1 722651.1 610359.2  701222.7  772685.5
-CFL1    1361119.4  744690.1 597469.9 692617.2 657270.1  670467.7  873475.1
-BSN      814769.8 1036887.8 880949.4 845161.8 668411.9 1279428.0 1090659.9
-ATP8A1   879078.2  850214.6 539155.1 517176.4 518878.5  746742.2  885949.9
-               F5
-NBAS     727320.7
-CEP170B  591923.5
-NPEPPS   912074.5
-CFL1    1145276.3
-BSN      657207.1
-ATP8A1   665126.6</code></pre>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>for_heatmaps_DEMvsNOR <span class="ot">=</span> TMT_data <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select relevant columns</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, GeneName, A1<span class="sc">:</span>J9) <span class="sc">%&gt;%</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter to only include proteins in sig_DEMvsNOR - keep rows where the value UniprotAccession column is found in UniprotAccession column in sig_DEMvsNOR</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(UniprotAccession <span class="sc">%in%</span> sig_DEMvsNOR<span class="sc">$</span>UniprotAccession) <span class="sc">%&gt;%</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove UniprotAccession column</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>UniprotAccession) <span class="sc">%&gt;%</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set GeneName column as row names</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="st">"GeneName"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select releavnt columns based on sample IDs found the in the filtered sample ID list</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(sampleID_DEMvsNOR))</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(for_heatmaps_DEMvsNOR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">A1</th>
+<th style="text-align: right;">E6</th>
+<th style="text-align: right;">G5</th>
+<th style="text-align: right;">I2</th>
+<th style="text-align: right;">J10</th>
+<th style="text-align: right;">J2</th>
+<th style="text-align: right;">B10</th>
+<th style="text-align: right;">C1</th>
+<th style="text-align: right;">G7</th>
+<th style="text-align: right;">H10</th>
+<th style="text-align: right;">A2</th>
+<th style="text-align: right;">C8</th>
+<th style="text-align: right;">E2</th>
+<th style="text-align: right;">F4</th>
+<th style="text-align: right;">G2</th>
+<th style="text-align: right;">I3</th>
+<th style="text-align: right;">J8</th>
+<th style="text-align: right;">B5</th>
+<th style="text-align: right;">D9</th>
+<th style="text-align: right;">E7</th>
+<th style="text-align: right;">E5</th>
+<th style="text-align: right;">F6</th>
+<th style="text-align: right;">G1</th>
+<th style="text-align: right;">D10</th>
+<th style="text-align: right;">D8</th>
+<th style="text-align: right;">I6</th>
+<th style="text-align: right;">A7</th>
+<th style="text-align: right;">C2</th>
+<th style="text-align: right;">C6</th>
+<th style="text-align: right;">D5</th>
+<th style="text-align: right;">H9</th>
+<th style="text-align: right;">I1</th>
+<th style="text-align: right;">C7</th>
+<th style="text-align: right;">G6</th>
+<th style="text-align: right;">H5</th>
+<th style="text-align: right;">A3</th>
+<th style="text-align: right;">B8</th>
+<th style="text-align: right;">I7</th>
+<th style="text-align: right;">A8</th>
+<th style="text-align: right;">E1</th>
+<th style="text-align: right;">H4</th>
+<th style="text-align: right;">J7</th>
+<th style="text-align: right;">B4</th>
+<th style="text-align: right;">B9</th>
+<th style="text-align: right;">F10</th>
+<th style="text-align: right;">F9</th>
+<th style="text-align: right;">H3</th>
+<th style="text-align: right;">J9</th>
+<th style="text-align: right;">D4</th>
+<th style="text-align: right;">F5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">NBAS</td>
+<td style="text-align: right;">832889.2</td>
+<td style="text-align: right;">784479.1</td>
+<td style="text-align: right;">753785.9</td>
+<td style="text-align: right;">846008.8</td>
+<td style="text-align: right;">841958.9</td>
+<td style="text-align: right;">642983.3</td>
+<td style="text-align: right;">915164.0</td>
+<td style="text-align: right;">914493.7</td>
+<td style="text-align: right;">722010.0</td>
+<td style="text-align: right;">701666.6</td>
+<td style="text-align: right;">752228.3</td>
+<td style="text-align: right;">821178.1</td>
+<td style="text-align: right;">736876.8</td>
+<td style="text-align: right;">817938.7</td>
+<td style="text-align: right;">790799.0</td>
+<td style="text-align: right;">681383.1</td>
+<td style="text-align: right;">805286.5</td>
+<td style="text-align: right;">767230.7</td>
+<td style="text-align: right;">802739.3</td>
+<td style="text-align: right;">849942.7</td>
+<td style="text-align: right;">881897.7</td>
+<td style="text-align: right;">733606.2</td>
+<td style="text-align: right;">858689.2</td>
+<td style="text-align: right;">769264.8</td>
+<td style="text-align: right;">702213.9</td>
+<td style="text-align: right;">894098.6</td>
+<td style="text-align: right;">924760.1</td>
+<td style="text-align: right;">857577.5</td>
+<td style="text-align: right;">788550.2</td>
+<td style="text-align: right;">724891.9</td>
+<td style="text-align: right;">741004.3</td>
+<td style="text-align: right;">898816.1</td>
+<td style="text-align: right;">791288.4</td>
+<td style="text-align: right;">720692.3</td>
+<td style="text-align: right;">795864.7</td>
+<td style="text-align: right;">857231.7</td>
+<td style="text-align: right;">950814.3</td>
+<td style="text-align: right;">892047.4</td>
+<td style="text-align: right;">1137231.4</td>
+<td style="text-align: right;">683256.2</td>
+<td style="text-align: right;">759389.2</td>
+<td style="text-align: right;">730808.3</td>
+<td style="text-align: right;">882040.5</td>
+<td style="text-align: right;">773340.9</td>
+<td style="text-align: right;">831183.0</td>
+<td style="text-align: right;">875094.7</td>
+<td style="text-align: right;">956301.2</td>
+<td style="text-align: right;">904288.1</td>
+<td style="text-align: right;">650675.2</td>
+<td style="text-align: right;">727320.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CEP170B</td>
+<td style="text-align: right;">696550.1</td>
+<td style="text-align: right;">846008.8</td>
+<td style="text-align: right;">773105.1</td>
+<td style="text-align: right;">755830.5</td>
+<td style="text-align: right;">1077925.2</td>
+<td style="text-align: right;">920412.8</td>
+<td style="text-align: right;">738896.9</td>
+<td style="text-align: right;">925978.8</td>
+<td style="text-align: right;">864331.0</td>
+<td style="text-align: right;">644102.9</td>
+<td style="text-align: right;">667829.6</td>
+<td style="text-align: right;">655469.3</td>
+<td style="text-align: right;">826476.9</td>
+<td style="text-align: right;">841003.4</td>
+<td style="text-align: right;">833971.4</td>
+<td style="text-align: right;">720301.6</td>
+<td style="text-align: right;">795952.4</td>
+<td style="text-align: right;">717904.3</td>
+<td style="text-align: right;">893961.8</td>
+<td style="text-align: right;">870230.2</td>
+<td style="text-align: right;">1050533.4</td>
+<td style="text-align: right;">663481.4</td>
+<td style="text-align: right;">920222.2</td>
+<td style="text-align: right;">888452.4</td>
+<td style="text-align: right;">752867.4</td>
+<td style="text-align: right;">885309.2</td>
+<td style="text-align: right;">760458.4</td>
+<td style="text-align: right;">758875.5</td>
+<td style="text-align: right;">671841.8</td>
+<td style="text-align: right;">855212.1</td>
+<td style="text-align: right;">694294.3</td>
+<td style="text-align: right;">793883.4</td>
+<td style="text-align: right;">667856.8</td>
+<td style="text-align: right;">750331.4</td>
+<td style="text-align: right;">796984.0</td>
+<td style="text-align: right;">662701.1</td>
+<td style="text-align: right;">945771.2</td>
+<td style="text-align: right;">753890.7</td>
+<td style="text-align: right;">691745.9</td>
+<td style="text-align: right;">895834.3</td>
+<td style="text-align: right;">962610.5</td>
+<td style="text-align: right;">991219.9</td>
+<td style="text-align: right;">716623.4</td>
+<td style="text-align: right;">934259.4</td>
+<td style="text-align: right;">831870.3</td>
+<td style="text-align: right;">794966.7</td>
+<td style="text-align: right;">828596.7</td>
+<td style="text-align: right;">919087.7</td>
+<td style="text-align: right;">946335.7</td>
+<td style="text-align: right;">591923.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NPEPPS</td>
+<td style="text-align: right;">714522.9</td>
+<td style="text-align: right;">820041.9</td>
+<td style="text-align: right;">914790.6</td>
+<td style="text-align: right;">886666.2</td>
+<td style="text-align: right;">719191.3</td>
+<td style="text-align: right;">782091.8</td>
+<td style="text-align: right;">784178.4</td>
+<td style="text-align: right;">611402.3</td>
+<td style="text-align: right;">796221.3</td>
+<td style="text-align: right;">1158339.8</td>
+<td style="text-align: right;">1039126.0</td>
+<td style="text-align: right;">1335543.2</td>
+<td style="text-align: right;">714301.7</td>
+<td style="text-align: right;">970962.8</td>
+<td style="text-align: right;">751801.6</td>
+<td style="text-align: right;">1032293.3</td>
+<td style="text-align: right;">579369.4</td>
+<td style="text-align: right;">893085.8</td>
+<td style="text-align: right;">873781.2</td>
+<td style="text-align: right;">699272.6</td>
+<td style="text-align: right;">564704.7</td>
+<td style="text-align: right;">1139546.6</td>
+<td style="text-align: right;">904888.4</td>
+<td style="text-align: right;">621807.4</td>
+<td style="text-align: right;">895439.2</td>
+<td style="text-align: right;">628193.5</td>
+<td style="text-align: right;">894924.0</td>
+<td style="text-align: right;">772999.3</td>
+<td style="text-align: right;">794915.1</td>
+<td style="text-align: right;">728429.9</td>
+<td style="text-align: right;">905284.0</td>
+<td style="text-align: right;">1068223.6</td>
+<td style="text-align: right;">1145416.5</td>
+<td style="text-align: right;">738928.9</td>
+<td style="text-align: right;">1113425.9</td>
+<td style="text-align: right;">1130547.5</td>
+<td style="text-align: right;">790695.4</td>
+<td style="text-align: right;">674256.4</td>
+<td style="text-align: right;">1060706.8</td>
+<td style="text-align: right;">1111317.2</td>
+<td style="text-align: right;">934226.4</td>
+<td style="text-align: right;">781516.0</td>
+<td style="text-align: right;">1049193.0</td>
+<td style="text-align: right;">664859.7</td>
+<td style="text-align: right;">652782.1</td>
+<td style="text-align: right;">722651.1</td>
+<td style="text-align: right;">610359.2</td>
+<td style="text-align: right;">701222.7</td>
+<td style="text-align: right;">772685.5</td>
+<td style="text-align: right;">912074.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CFL1</td>
+<td style="text-align: right;">985519.4</td>
+<td style="text-align: right;">814322.4</td>
+<td style="text-align: right;">845878.8</td>
+<td style="text-align: right;">776617.8</td>
+<td style="text-align: right;">800807.4</td>
+<td style="text-align: right;">775023.7</td>
+<td style="text-align: right;">989159.2</td>
+<td style="text-align: right;">1021005.2</td>
+<td style="text-align: right;">862508.4</td>
+<td style="text-align: right;">1228210.2</td>
+<td style="text-align: right;">924297.5</td>
+<td style="text-align: right;">977953.5</td>
+<td style="text-align: right;">712306.6</td>
+<td style="text-align: right;">1073803.3</td>
+<td style="text-align: right;">1180519.2</td>
+<td style="text-align: right;">952020.2</td>
+<td style="text-align: right;">658127.0</td>
+<td style="text-align: right;">856178.7</td>
+<td style="text-align: right;">827279.7</td>
+<td style="text-align: right;">749858.5</td>
+<td style="text-align: right;">577226.7</td>
+<td style="text-align: right;">1128674.2</td>
+<td style="text-align: right;">816618.9</td>
+<td style="text-align: right;">1207531.8</td>
+<td style="text-align: right;">912636.5</td>
+<td style="text-align: right;">596237.2</td>
+<td style="text-align: right;">1076310.8</td>
+<td style="text-align: right;">850443.6</td>
+<td style="text-align: right;">986780.6</td>
+<td style="text-align: right;">833936.5</td>
+<td style="text-align: right;">947779.1</td>
+<td style="text-align: right;">940502.0</td>
+<td style="text-align: right;">1011685.2</td>
+<td style="text-align: right;">792322.2</td>
+<td style="text-align: right;">668805.5</td>
+<td style="text-align: right;">1241638.1</td>
+<td style="text-align: right;">694443.1</td>
+<td style="text-align: right;">674502.1</td>
+<td style="text-align: right;">1216280.4</td>
+<td style="text-align: right;">801919.2</td>
+<td style="text-align: right;">741783.6</td>
+<td style="text-align: right;">570244.0</td>
+<td style="text-align: right;">1361119.4</td>
+<td style="text-align: right;">744690.1</td>
+<td style="text-align: right;">597469.9</td>
+<td style="text-align: right;">692617.2</td>
+<td style="text-align: right;">657270.1</td>
+<td style="text-align: right;">670467.7</td>
+<td style="text-align: right;">873475.1</td>
+<td style="text-align: right;">1145276.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BSN</td>
+<td style="text-align: right;">530919.7</td>
+<td style="text-align: right;">846076.5</td>
+<td style="text-align: right;">846436.6</td>
+<td style="text-align: right;">889481.8</td>
+<td style="text-align: right;">1218898.6</td>
+<td style="text-align: right;">922020.7</td>
+<td style="text-align: right;">566209.0</td>
+<td style="text-align: right;">795198.9</td>
+<td style="text-align: right;">800483.8</td>
+<td style="text-align: right;">690870.4</td>
+<td style="text-align: right;">731639.1</td>
+<td style="text-align: right;">682707.4</td>
+<td style="text-align: right;">745006.3</td>
+<td style="text-align: right;">845001.2</td>
+<td style="text-align: right;">787442.4</td>
+<td style="text-align: right;">755699.3</td>
+<td style="text-align: right;">897867.2</td>
+<td style="text-align: right;">773148.3</td>
+<td style="text-align: right;">914948.5</td>
+<td style="text-align: right;">883398.2</td>
+<td style="text-align: right;">1152849.3</td>
+<td style="text-align: right;">744842.0</td>
+<td style="text-align: right;">1057582.4</td>
+<td style="text-align: right;">950279.9</td>
+<td style="text-align: right;">670379.9</td>
+<td style="text-align: right;">868443.3</td>
+<td style="text-align: right;">779338.4</td>
+<td style="text-align: right;">977543.1</td>
+<td style="text-align: right;">680185.9</td>
+<td style="text-align: right;">933241.1</td>
+<td style="text-align: right;">605167.4</td>
+<td style="text-align: right;">842562.7</td>
+<td style="text-align: right;">627240.2</td>
+<td style="text-align: right;">783039.5</td>
+<td style="text-align: right;">876770.8</td>
+<td style="text-align: right;">605638.4</td>
+<td style="text-align: right;">970483.8</td>
+<td style="text-align: right;">735500.0</td>
+<td style="text-align: right;">825549.2</td>
+<td style="text-align: right;">920162.2</td>
+<td style="text-align: right;">1116828.8</td>
+<td style="text-align: right;">911875.2</td>
+<td style="text-align: right;">814769.8</td>
+<td style="text-align: right;">1036887.8</td>
+<td style="text-align: right;">880949.4</td>
+<td style="text-align: right;">845161.8</td>
+<td style="text-align: right;">668411.9</td>
+<td style="text-align: right;">1279428.0</td>
+<td style="text-align: right;">1090659.9</td>
+<td style="text-align: right;">657207.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ATP8A1</td>
+<td style="text-align: right;">654957.1</td>
+<td style="text-align: right;">613369.5</td>
+<td style="text-align: right;">659219.5</td>
+<td style="text-align: right;">862817.5</td>
+<td style="text-align: right;">912675.3</td>
+<td style="text-align: right;">798298.1</td>
+<td style="text-align: right;">689566.3</td>
+<td style="text-align: right;">669601.6</td>
+<td style="text-align: right;">913929.0</td>
+<td style="text-align: right;">1003973.1</td>
+<td style="text-align: right;">1111878.5</td>
+<td style="text-align: right;">1190518.0</td>
+<td style="text-align: right;">1148976.7</td>
+<td style="text-align: right;">1145030.5</td>
+<td style="text-align: right;">894967.0</td>
+<td style="text-align: right;">1419182.4</td>
+<td style="text-align: right;">828432.9</td>
+<td style="text-align: right;">1070102.5</td>
+<td style="text-align: right;">874000.5</td>
+<td style="text-align: right;">683980.2</td>
+<td style="text-align: right;">751041.0</td>
+<td style="text-align: right;">929958.3</td>
+<td style="text-align: right;">640951.1</td>
+<td style="text-align: right;">724683.8</td>
+<td style="text-align: right;">1138971.7</td>
+<td style="text-align: right;">745938.6</td>
+<td style="text-align: right;">783911.5</td>
+<td style="text-align: right;">687694.2</td>
+<td style="text-align: right;">834270.4</td>
+<td style="text-align: right;">699222.9</td>
+<td style="text-align: right;">1079954.9</td>
+<td style="text-align: right;">981338.9</td>
+<td style="text-align: right;">878893.8</td>
+<td style="text-align: right;">686633.8</td>
+<td style="text-align: right;">744714.3</td>
+<td style="text-align: right;">833100.0</td>
+<td style="text-align: right;">651980.1</td>
+<td style="text-align: right;">711773.6</td>
+<td style="text-align: right;">744871.1</td>
+<td style="text-align: right;">815807.1</td>
+<td style="text-align: right;">722674.7</td>
+<td style="text-align: right;">804256.3</td>
+<td style="text-align: right;">879078.2</td>
+<td style="text-align: right;">850214.6</td>
+<td style="text-align: right;">539155.1</td>
+<td style="text-align: right;">517176.4</td>
+<td style="text-align: right;">518878.5</td>
+<td style="text-align: right;">746742.2</td>
+<td style="text-align: right;">885949.9</td>
+<td style="text-align: right;">665126.6</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Create a dataframe <code>dx_col</code> containing colours for each diagnosis group.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialise with default colour</span></span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>dx_col <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">sampleID=</span>key_DEMvsNOR<span class="sc">$</span>Code, <span class="at">dx=</span>key_DEMvsNOR<span class="sc">$</span>Project.diagnosis, <span class="at">colour=</span><span class="st">"#5e3c99"</span>,<span class="at">stringsAsFactors =</span> F)</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>dx_col<span class="sc">$</span>colour[dx_col<span class="sc">$</span>dx <span class="sc">==</span> <span class="st">"DEM_AD"</span>] <span class="ot">=</span> <span class="st">"#e66101"</span></span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dx_col)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  sampleID     dx  colour
-1       A1 DEM_AD #e66101
-2       E6      N #5e3c99
-3       G5 DEM_AD #e66101
-4       I2 DEM_AD #e66101
-5      J10      N #5e3c99
-6       J2 DEM_AD #e66101</code></pre>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialise with default colour</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>dx_col <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">sampleID=</span>key_DEMvsNOR<span class="sc">$</span>Code, <span class="at">dx=</span>key_DEMvsNOR<span class="sc">$</span>Project.diagnosis, <span class="at">colour=</span><span class="st">"#5e3c99"</span>,<span class="at">stringsAsFactors =</span> F)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>dx_col<span class="sc">$</span>colour[dx_col<span class="sc">$</span>dx <span class="sc">==</span> <span class="st">"DEM_AD"</span>] <span class="ot">=</span> <span class="st">"#e66101"</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(dx_col))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">sampleID</th>
+<th style="text-align: left;">dx</th>
+<th style="text-align: left;">colour</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">A1</td>
+<td style="text-align: left;">DEM_AD</td>
+<td style="text-align: left;">#e66101</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">E6</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">#5e3c99</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">G5</td>
+<td style="text-align: left;">DEM_AD</td>
+<td style="text-align: left;">#e66101</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">I2</td>
+<td style="text-align: left;">DEM_AD</td>
+<td style="text-align: left;">#e66101</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">J10</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">#5e3c99</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">J2</td>
+<td style="text-align: left;">DEM_AD</td>
+<td style="text-align: left;">#e66101</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Generate the heatmap for log2-transformed expression data using the <code>heatmap.2()</code> function from the <code>gplots</code> package.</p>
+<p>The column Z-score is a way of standardising the protein expression values by centering and scaling (mean = 0 and standard deviation = 1).</p>
+<ul>
+<li><p>Centering: for each protein (column), the mean of its values across all samples is subtracted. This centers the column values around 0.</p></li>
+<li><p>Scaling: each column is then divided by its standard deviation. This ensures that all values for each protein have a standard deviation of 1, making them comparable across proteins regardless of differences in magnitude.</p></li>
+</ul>
+<p><span class="math display">\[
+Z = \frac{X - μ}{σ}
+\]</span></p>
+<ul>
+<li><p>Where:</p>
+<ul>
+<li><p><span class="math inline">\(Z\)</span> is the Z-score.</p></li>
+<li><p><span class="math inline">\(X\)</span> is the value being standardised.</p></li>
+<li><p><span class="math inline">\(μ\)</span> is the mean of all values in the column (protein).</p></li>
+<li><p><span class="math inline">\(σ\)</span> is the standard deviation of all values in the column (protein).</p></li>
+</ul></li>
+</ul>
+<p>This scaling ensures that differences in expression patterns, rather than absolute expression levels, are highlighted for each protein.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap.2</span>(<span class="fu">t</span>(<span class="fu">as.matrix</span>(<span class="fu">log2</span>(for_heatmaps_DEMvsNOR))),</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">trace=</span><span class="st">"none"</span>,</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">scale=</span><span class="st">"col"</span>, <span class="co"># Normalise data across samplew</span></span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">col=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">"steelblue"</span>,<span class="st">"white"</span>,<span class="st">"darkred"</span>))(<span class="dv">50</span>), <span class="co"># Colour scale</span></span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Use diagnosis colours to annotate the samples</span></span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">RowSideColors=</span>dx_col<span class="sc">$</span>colour[<span class="fu">match</span>(<span class="fu">colnames</span>(for_heatmaps_DEMvsNOR), dx_col<span class="sc">$</span>sampleID)],</span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">main=</span><span class="st">"Significant DE proteins: DEM vs NOR"</span>,</span>
-<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">cexCol =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap.2</span>(<span class="fu">t</span>(<span class="fu">as.matrix</span>(<span class="fu">log2</span>(for_heatmaps_DEMvsNOR))),</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">trace=</span><span class="st">"none"</span>,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">scale=</span><span class="st">"col"</span>, <span class="co"># Centre and scale data</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">col=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">"steelblue"</span>,<span class="st">"white"</span>,<span class="st">"darkred"</span>))(<span class="dv">50</span>), <span class="co"># Colour scale</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Use diagnosis colours to annotate the samples</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">RowSideColors=</span>dx_col<span class="sc">$</span>colour[<span class="fu">match</span>(<span class="fu">colnames</span>(for_heatmaps_DEMvsNOR), dx_col<span class="sc">$</span>sampleID)],</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">main=</span><span class="st">"Significant DE proteins: DEM vs NOR"</span>,</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">cexCol =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -65123,93 +66623,157 @@ ATP8A1   665126.6</code></pre>
 <h2 class="anchored" data-anchor-id="volcano-plot">Volcano plot</h2>
 <p>Prepare data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for term and selct columns</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>de <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, GeneName, term, logFC, padj)</span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set thresholds</span></span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>thresh_fc<span class="ot">=</span><span class="fl">0.1</span> <span class="co"># Threshold for log2 fold change</span></span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>thresh_pval<span class="ot">=</span><span class="fl">0.05</span> <span class="co"># Threshold for adjusted p-value</span></span>
-<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Count total proteins</span></span>
-<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>n_total <span class="ot">=</span> <span class="fu">nrow</span>(de) <span class="co"># 3924 proteins</span></span>
-<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Count how many proteins are in each category (unchanged, upregulated, downregulated)</span></span>
-<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>n_unchanged <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
-<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is between -thresh_fc and +thresh_fc</span></span>
-<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&lt;</span> thresh_fc <span class="sc">&amp;</span> logFC <span class="sc">&gt;</span> <span class="sc">-</span>(thresh_fc)) <span class="sc">%&gt;%</span></span>
-<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
-<span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a>n_up <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
-<span id="cb53-19"><a href="#cb53-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is greater than thresh_fc and significant</span></span>
-<span id="cb53-20"><a href="#cb53-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&gt;=</span> thresh_fc <span class="sc">&amp;</span> padj <span class="sc">&lt;=</span> thresh_pval) <span class="sc">%&gt;%</span></span>
-<span id="cb53-21"><a href="#cb53-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
-<span id="cb53-22"><a href="#cb53-22" aria-hidden="true" tabindex="-1"></a>n_down <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
-<span id="cb53-23"><a href="#cb53-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is less than -thresh_fc and significant</span></span>
-<span id="cb53-24"><a href="#cb53-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&lt;=</span> <span class="sc">-</span>(thresh_fc) <span class="sc">&amp;</span> padj <span class="sc">&lt;=</span> thresh_pval) <span class="sc">%&gt;%</span></span>
-<span id="cb53-25"><a href="#cb53-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
-<span id="cb53-26"><a href="#cb53-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-27"><a href="#cb53-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign DE lables to proteins</span></span>
-<span id="cb53-28"><a href="#cb53-28" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Unchanged ("</span>,n_unchanged,<span class="st">")"</span>)</span>
-<span id="cb53-29"><a href="#cb53-29" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression[de<span class="sc">$</span>logFC <span class="sc">&gt;=</span> thresh_fc <span class="sc">&amp;</span> de<span class="sc">$</span>padj <span class="sc">&lt;=</span> thresh_pval] <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Up ("</span>,n_up,<span class="st">")"</span>)</span>
-<span id="cb53-30"><a href="#cb53-30" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression[de<span class="sc">$</span>logFC <span class="sc">&lt;=</span> <span class="sc">-</span>(thresh_fc) <span class="sc">&amp;</span> de<span class="sc">$</span>padj <span class="sc">&lt;=</span> thresh_pval] <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Down ("</span>,n_down,<span class="st">")"</span>)</span>
-<span id="cb53-31"><a href="#cb53-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-32"><a href="#cb53-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Set colours for plot - the order of colours will correspond to the order of levels in the factor variable de$Expression</span></span>
-<span id="cb53-33"><a href="#cb53-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (n_up <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> n_down <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are no up or downregulated genes</span></span>
-<span id="cb53-34"><a href="#cb53-34" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#84A1AB"</span>) <span class="co"># Use grey-blue for all genes</span></span>
-<span id="cb53-35"><a href="#cb53-35" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (n_up <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are only downregulated genes</span></span>
-<span id="cb53-36"><a href="#cb53-36" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#B02302"</span>, <span class="st">"#84A1AB"</span>) <span class="co"># Use red for down genes and grey-blue for unchanged genes</span></span>
-<span id="cb53-37"><a href="#cb53-37" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (n_down <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are only upregulated genes</span></span>
-<span id="cb53-38"><a href="#cb53-38" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#84A1AB"</span>, <span class="st">"#61B002"</span>) <span class="co"># Use grey-blue for unchanged genes and green for up genes</span></span>
-<span id="cb53-39"><a href="#cb53-39" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> { <span class="co"># If there are downregulated and upregulated genes</span></span>
-<span id="cb53-40"><a href="#cb53-40" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#B02302"</span>, <span class="st">"#84A1AB"</span>, <span class="st">"#61B002"</span>) <span class="co"># Use red for down genes, and grey-blue for unchanged genes, and green for up genes</span></span>
-<span id="cb53-41"><a href="#cb53-41" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb53-42"><a href="#cb53-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-43"><a href="#cb53-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Add gene names to genes that are differentially expressed</span></span>
-<span id="cb53-44"><a href="#cb53-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Create "delabel" column and initialise with NA values for all rows (by default, no genes are labelled on the plot)</span></span>
-<span id="cb53-45"><a href="#cb53-45" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>delabel <span class="ot">=</span> <span class="cn">NA</span></span>
-<span id="cb53-46"><a href="#cb53-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Select delabel entries where expression does not contain "Unchanged"</span></span>
-<span id="cb53-47"><a href="#cb53-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign GeneName where expression does not contain "Unchanged"</span></span>
-<span id="cb53-48"><a href="#cb53-48" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>delabel[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"Unchanged"</span>, de<span class="sc">$</span>expression)] <span class="ot">&lt;-</span> de<span class="sc">$</span>GeneName[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"Unchanged"</span>, de<span class="sc">$</span>expression)]</span>
-<span id="cb53-49"><a href="#cb53-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort the data frame by adjusted p-values</span></span>
-<span id="cb53-50"><a href="#cb53-50" aria-hidden="true" tabindex="-1"></a>de <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
-<span id="cb53-51"><a href="#cb53-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(padj)</span>
-<span id="cb53-52"><a href="#cb53-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-53"><a href="#cb53-53" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(de)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  UniprotAccession GeneName        term      logFC         padj expression
-1           O15240      VGF Dx_DEMoverN -1.0497628 6.724646e-06  Down (71)
-2           Q9Y2J0    RPH3A Dx_DEMoverN -0.6088561 3.587930e-05  Down (71)
-3           P49619     DGKG Dx_DEMoverN  0.3484299 1.797738e-04    Up (26)
-4           Q96PB7    OLFM3 Dx_DEMoverN -0.5685180 1.797738e-04  Down (71)
-5           Q16630    CPSF6 Dx_DEMoverN  0.5135081 3.729729e-04    Up (26)
-6           Q9NR22    PRMT8 Dx_DEMoverN -0.3460503 3.729729e-04  Down (71)
-  delabel
-1     VGF
-2   RPH3A
-3    DGKG
-4   OLFM3
-5   CPSF6
-6   PRMT8</code></pre>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for term and selct columns</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>de <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, GeneName, term, logFC, padj)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set thresholds</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>thresh_fc<span class="ot">=</span><span class="fl">0.1</span> <span class="co"># Threshold for log2 fold change</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>thresh_pval<span class="ot">=</span><span class="fl">0.05</span> <span class="co"># Threshold for adjusted p-value</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Count total proteins</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>n_total <span class="ot">=</span> <span class="fu">nrow</span>(de) <span class="co"># 3924 proteins</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Count how many proteins are in each category (unchanged, upregulated, downregulated)</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>n_unchanged <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is between -thresh_fc and +thresh_fc</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&lt;</span> thresh_fc <span class="sc">&amp;</span> logFC <span class="sc">&gt;</span> <span class="sc">-</span>(thresh_fc)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>n_up <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is greater than thresh_fc and significant</span></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&gt;=</span> thresh_fc <span class="sc">&amp;</span> padj <span class="sc">&lt;=</span> thresh_pval) <span class="sc">%&gt;%</span></span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>n_down <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is less than -thresh_fc and significant</span></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&lt;=</span> <span class="sc">-</span>(thresh_fc) <span class="sc">&amp;</span> padj <span class="sc">&lt;=</span> thresh_pval) <span class="sc">%&gt;%</span></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign DE lables to proteins</span></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Unchanged ("</span>,n_unchanged,<span class="st">")"</span>)</span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression[de<span class="sc">$</span>logFC <span class="sc">&gt;=</span> thresh_fc <span class="sc">&amp;</span> de<span class="sc">$</span>padj <span class="sc">&lt;=</span> thresh_pval] <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Up ("</span>,n_up,<span class="st">")"</span>)</span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression[de<span class="sc">$</span>logFC <span class="sc">&lt;=</span> <span class="sc">-</span>(thresh_fc) <span class="sc">&amp;</span> de<span class="sc">$</span>padj <span class="sc">&lt;=</span> thresh_pval] <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Down ("</span>,n_down,<span class="st">")"</span>)</span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Set colours for plot - the order of colours will correspond to the order of levels in the factor variable de$Expression</span></span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (n_up <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> n_down <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are no up or downregulated genes</span></span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#84A1AB"</span>) <span class="co"># Use grey-blue for all genes</span></span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (n_up <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are only downregulated genes</span></span>
+<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#B02302"</span>, <span class="st">"#84A1AB"</span>) <span class="co"># Use red for down genes and grey-blue for unchanged genes</span></span>
+<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (n_down <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are only upregulated genes</span></span>
+<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#84A1AB"</span>, <span class="st">"#61B002"</span>) <span class="co"># Use grey-blue for unchanged genes and green for up genes</span></span>
+<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> { <span class="co"># If there are downregulated and upregulated genes</span></span>
+<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#B02302"</span>, <span class="st">"#84A1AB"</span>, <span class="st">"#61B002"</span>) <span class="co"># Use red for down genes, and grey-blue for unchanged genes, and green for up genes</span></span>
+<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Add gene names to genes that are differentially expressed</span></span>
+<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Create "delabel" column and initialise with NA values for all rows (by default, no genes are labelled on the plot)</span></span>
+<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>delabel <span class="ot">=</span> <span class="cn">NA</span></span>
+<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Select delabel entries where expression does not contain "Unchanged"</span></span>
+<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign GeneName where expression does not contain "Unchanged"</span></span>
+<span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>delabel[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"Unchanged"</span>, de<span class="sc">$</span>expression)] <span class="ot">&lt;-</span> de<span class="sc">$</span>GeneName[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"Unchanged"</span>, de<span class="sc">$</span>expression)]</span>
+<span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort the data frame by adjusted p-values</span></span>
+<span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a>de <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
+<span id="cb36-51"><a href="#cb36-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(padj)</span>
+<span id="cb36-52"><a href="#cb36-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-53"><a href="#cb36-53" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(de))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 11%">
+<col style="width: 15%">
+<col style="width: 14%">
+<col style="width: 12%">
+<col style="width: 14%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">UniprotAccession</th>
+<th style="text-align: left;">GeneName</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">logFC</th>
+<th style="text-align: right;">padj</th>
+<th style="text-align: left;">expression</th>
+<th style="text-align: left;">delabel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">O15240</td>
+<td style="text-align: left;">VGF</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-1.0497628</td>
+<td style="text-align: right;">0.0000067</td>
+<td style="text-align: left;">Down (71)</td>
+<td style="text-align: left;">VGF</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9Y2J0</td>
+<td style="text-align: left;">RPH3A</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-0.6088561</td>
+<td style="text-align: right;">0.0000359</td>
+<td style="text-align: left;">Down (71)</td>
+<td style="text-align: left;">RPH3A</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P49619</td>
+<td style="text-align: left;">DGKG</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">0.3484299</td>
+<td style="text-align: right;">0.0001798</td>
+<td style="text-align: left;">Up (26)</td>
+<td style="text-align: left;">DGKG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q96PB7</td>
+<td style="text-align: left;">OLFM3</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-0.5685180</td>
+<td style="text-align: right;">0.0001798</td>
+<td style="text-align: left;">Down (71)</td>
+<td style="text-align: left;">OLFM3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Q16630</td>
+<td style="text-align: left;">CPSF6</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">0.5135081</td>
+<td style="text-align: right;">0.0003730</td>
+<td style="text-align: left;">Up (26)</td>
+<td style="text-align: left;">CPSF6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Q9NR22</td>
+<td style="text-align: left;">PRMT8</td>
+<td style="text-align: left;">Dx_DEMoverN</td>
+<td style="text-align: right;">-0.3460503</td>
+<td style="text-align: right;">0.0003730</td>
+<td style="text-align: left;">Down (71)</td>
+<td style="text-align: left;">PRMT8</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>Generate volcano plot, where the x-axis is mapped to the log2 fold change values (i.e.&nbsp;magnitude of change) and the y-axis is mapped to the -log10 of the padj values (i.e.&nbsp;significance).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>de, <span class="fu">aes</span>(<span class="at">x=</span>logFC, <span class="at">y=</span><span class="sc">-</span><span class="fu">log10</span>(padj)))  <span class="sc">+</span></span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add vertical dashed lines at the foldchange thresholds</span></span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="fu">c</span>(<span class="sc">-</span>(thresh_fc), thresh_fc), <span class="at">col=</span><span class="st">"light grey"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add horizontal dashed line at the pval threshold</span></span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="sc">-</span><span class="fu">log10</span>(thresh_pval), <span class="at">col=</span><span class="st">"light grey"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add points to the plot, coloured by "expression" column</span></span>
-<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>expression), <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add text lables (avoiding overlap) to the top 25 most signficant DE genes</span></span>
-<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Set x- and y-coordinates for labels using "logFC" and "padj" columns</span></span>
-<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_text_repel</span>(<span class="at">data=</span>de[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>,],<span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(padj),<span class="at">label=</span>delabel),<span class="at">max.overlaps=</span><span class="dv">25</span>,<span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Use colours specified earlier</span></span>
-<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>          <span class="fu">scale_color_manual</span>(<span class="at">values=</span>cvec) <span class="sc">+</span></span>
-<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Set appearance</span></span>
-<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>          <span class="fu">theme_few</span>() <span class="sc">+</span></span>
-<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a>          <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Dx_DEMoverN"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>de, <span class="fu">aes</span>(<span class="at">x=</span>logFC, <span class="at">y=</span><span class="sc">-</span><span class="fu">log10</span>(padj)))  <span class="sc">+</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add vertical dashed lines at the foldchange thresholds</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="fu">c</span>(<span class="sc">-</span>(thresh_fc), thresh_fc), <span class="at">col=</span><span class="st">"light grey"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add horizontal dashed line at the pval threshold</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="sc">-</span><span class="fu">log10</span>(thresh_pval), <span class="at">col=</span><span class="st">"light grey"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add points to the plot, coloured by "expression" column</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>expression), <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add text lables (avoiding overlap) to the top 25 most signficant DE genes</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Set x- and y-coordinates for labels using "logFC" and "padj" columns</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_text_repel</span>(<span class="at">data=</span>de[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>,],<span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(padj),<span class="at">label=</span>delabel),<span class="at">max.overlaps=</span><span class="dv">25</span>,<span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Use colours specified earlier</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>          <span class="fu">scale_color_manual</span>(<span class="at">values=</span>cvec) <span class="sc">+</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Set appearance</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>          <span class="fu">theme_few</span>() <span class="sc">+</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>          <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Dx_DEMoverN"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
