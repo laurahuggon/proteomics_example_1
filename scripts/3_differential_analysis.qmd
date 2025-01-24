@@ -49,7 +49,7 @@ Create a `protein_IDs` dataframe for later use.
 protein_IDs = TMT_data %>%
   select(ProteinID:ProteinDescription)
 
-head(protein_IDs)
+knitr::kable(head(protein_IDs))
 ```
 
 ## Linear modelling
@@ -124,7 +124,7 @@ Tidy the results and exclude the intercept term to keep only the predictor terms
 diag_lm_tidy = tidy(diag_lm) %>%
   filter(term != "(Intercept)")
 
-head(diag_lm_tidy)
+knitr::kable(head(diag_lm_tidy))
 ```
 
 Rename the terms comparing the diagnosis groups to normal.
@@ -134,7 +134,7 @@ diag_lm_tidy$term[diag_lm_tidy$term == "Project.diagnosisDEM_AD"] = "Dx_DEMoverN
 diag_lm_tidy$term[diag_lm_tidy$term == "Project.diagnosisFRL"] = "Dx_FRLoverN"
 diag_lm_tidy$term[diag_lm_tidy$term == "Project.diagnosisRES"] = "Dx_RESoverN"
 
-head(diag_lm_tidy)
+knitr::kable(head(diag_lm_tidy))
 ```
 
 ### Linear model (relative to DEM-AD)
@@ -161,7 +161,7 @@ Tidy the results and filter for comparisons not saved so far.
 diag_lm_2_tidy = tidy(diag_lm_2) %>%
   filter(term == "Project.diagnosisRES" | term == "Project.diagnosisFRL")
 
-head(diag_lm_2_tidy)
+knitr::kable(head(diag_lm_2_tidy))
 ```
 
 Rename the terms comparing the diagnosis groups to DEM-AD.
@@ -170,7 +170,7 @@ Rename the terms comparing the diagnosis groups to DEM-AD.
 diag_lm_2_tidy$term[diag_lm_2_tidy$term == "Project.diagnosisFRL"] = "Dx_FRLoverDEM"
 diag_lm_2_tidy$term[diag_lm_2_tidy$term == "Project.diagnosisRES"] = "Dx_RESoverDEM"
 
-head(diag_lm_2_tidy)
+knitr::kable(head(diag_lm_2_tidy))
 ```
 
 The `estimate` column represents the regression coefficient i.e. the magnitude and direction of the effect of the predictor variable (diagnosis) on the outcome variable (protein expression levels). Because the response variable (protein expression) is log2-transformed during modelling, `estimate` represents the log2-transformed difference in the outcome variable between the test group and the reference group i.e. log2 fold change (logFC).
@@ -201,7 +201,7 @@ Tidy the results and filter for comparisons not saved so far.
 diag_lm_3_tidy = tidy(diag_lm_3) %>%
   filter(term == "Project.diagnosisFRL")
 
-head(diag_lm_3_tidy)
+knitr::kable(head(diag_lm_3_tidy))
 ```
 
 Rename the terms comparing the diagnosis groups to Res.
@@ -209,7 +209,7 @@ Rename the terms comparing the diagnosis groups to Res.
 ```{r}
 diag_lm_3_tidy$term[diag_lm_3_tidy$term == "Project.diagnosisFRL"] = "Dx_FRLoverRES"
 
-head(diag_lm_3_tidy)
+knitr::kable(head(diag_lm_3_tidy))
 ```
 
 ### Combine
@@ -220,7 +220,7 @@ diag_lm_tidy = rbind(diag_lm_tidy, diag_lm_2_tidy, diag_lm_3_tidy)
 diag_lm_tidy = diag_lm_tidy %>%
   rename(logFC = estimate)
 
-diag_lm_tidy
+knitr::kable(head(diag_lm_tidy))
 ```
 
 ## Create a dataframe summarising the differential expression of proteins by diagnosis
@@ -239,7 +239,7 @@ Apply the Benjamini-Hochberg (BH) method to control the False Discovery Rate (FD
 ```{r}
 de_diagnosis$padj = p.adjust(de_diagnosis$p.value, method="BH")
 
-head(de_diagnosis)
+knitr::kable(head(de_diagnosis))
 ```
 
 Add significance labels and direction of change.
@@ -248,7 +248,7 @@ Add significance labels and direction of change.
 de_diagnosis$significant = ifelse(de_diagnosis$padj <= 0.05, "Yes", "No")
 de_diagnosis$direction = ifelse(de_diagnosis$logFC > 0, "Increase", "Decrease")
 
-head(de_diagnosis)
+knitr::kable(head(de_diagnosis))
 ```
 
 Merge with protein metadata.
@@ -257,7 +257,7 @@ Merge with protein metadata.
 # Match UniprotAccession from protein_IDs with response from de_diagnosis
 de_diagnosis = merge(protein_IDs, de_diagnosis, by.x="UniprotAccession", by.y="response")
 
-head(de_diagnosis)
+knitr::kable(head(de_diagnosis))
 ```
 
 Sort by adjusted p-value.
@@ -279,7 +279,7 @@ sig_summary_table = de_diagnosis %>%
   group_by(term, direction) %>%
   summarise (n = n())
 
-sig_summary_table
+knitr::kable(sig_summary_table)
 ```
 
 Tidy the table.
@@ -304,7 +304,7 @@ sig_summary_table = sig_summary_table %>%
   select(Variable, Increase, Decrease)
   
 
-sig_summary_table
+knitr::kable(sig_summary_table)
 ```
 
 ## Heatmap
@@ -322,7 +322,7 @@ sig_DEMvsNOR = de_diagnosis %>%
 sig_DEMvsNOR$UniprotAccession = as.character(sig_DEMvsNOR$UniprotAccession)
 sig_DEMvsNOR$GeneName = as.character(sig_DEMvsNOR$GeneName)
 
-head(sig_DEMvsNOR)
+knitr::kable(head(sig_DEMvsNOR))
 ```
 
 Prepare the sample key.
@@ -332,7 +332,7 @@ Prepare the sample key.
 key_DEMvsNOR = sample_key %>%
   filter(Project.diagnosis == "DEM_AD" | Project.diagnosis == "N")
 
-head(key_DEMvsNOR)
+knitr::kable(head(key_DEMvsNOR))
 
 # Create list of sample IDs (which is the Code column)
 sampleID_DEMvsNOR = key_DEMvsNOR$Code
@@ -355,7 +355,7 @@ for_heatmaps_DEMvsNOR = TMT_data %>%
   # Select releavnt columns based on sample IDs found the in the filtered sample ID list
   select(all_of(sampleID_DEMvsNOR))
 
-head(for_heatmaps_DEMvsNOR)
+knitr::kable(head(for_heatmaps_DEMvsNOR))
 ```
 
 Create a dataframe `dx_col` containing colours for each diagnosis group.
@@ -365,15 +365,37 @@ Create a dataframe `dx_col` containing colours for each diagnosis group.
 dx_col = data.frame(sampleID=key_DEMvsNOR$Code, dx=key_DEMvsNOR$Project.diagnosis, colour="#5e3c99",stringsAsFactors = F)
 dx_col$colour[dx_col$dx == "DEM_AD"] = "#e66101"
 
-head(dx_col)
+knitr::kable(head(dx_col))
 ```
 
 Generate the heatmap for log2-transformed expression data using the `heatmap.2()` function from the `gplots` package.
 
+The column Z-score is a way of standardising the protein expression values by centering and scaling (mean = 0 and standard deviation = 1).
+
+-   Centering: for each protein (column), the mean of its values across all samples is subtracted. This centers the column values around 0.
+
+-   Scaling: each column is then divided by its standard deviation. This ensures that all values for each protein have a standard deviation of 1, making them comparable across proteins regardless of differences in magnitude.
+
+$$
+Z = \frac{X - μ}{σ}
+$$
+
+-   Where:
+
+    -   $Z$ is the Z-score.
+
+    -   $X$ is the value being standardised.
+
+    -   $μ$ is the mean of all values in the column (protein).
+
+    -   $σ$ is the standard deviation of all values in the column (protein).
+
+This scaling ensures that differences in expression patterns, rather than absolute expression levels, are highlighted for each protein.
+
 ```{r, fig.width=10}
 heatmap.2(t(as.matrix(log2(for_heatmaps_DEMvsNOR))),
           trace="none",
-          scale="col", # Normalise data across samplew
+          scale="col", # Centre and scale data
           col=colorRampPalette(c("steelblue","white","darkred"))(50), # Colour scale
           # Use diagnosis colours to annotate the samples
           RowSideColors=dx_col$colour[match(colnames(for_heatmaps_DEMvsNOR), dx_col$sampleID)],
@@ -438,7 +460,7 @@ de$delabel[!grepl("Unchanged", de$expression)] <- de$GeneName[!grepl("Unchanged"
 de = de %>%
   arrange(padj)
 
-head(de)
+knitr::kable(head(de))
 ```
 
 Generate volcano plot, where the x-axis is mapped to the log2 fold change values (i.e. magnitude of change) and the y-axis is mapped to the -log10 of the padj values (i.e. significance).
