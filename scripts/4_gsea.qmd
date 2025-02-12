@@ -1,0 +1,182 @@
+---
+title: "4. GSEA"
+format: html
+editor: visual
+---
+
+## Data
+
+The data used in this example has been taken from ([Carlyle et al., 2021](https://www.sciencedirect.com/science/article/pii/S0197458021001275?via%3Dihub#sec0002)).
+
+This paper used multiplexed liquid chromatography mass-spectrometry to quantify enriched synaptic proteins from the parietal association cortex of 100 subjects with contrasting levels of AD pathology and cognitive performance.
+
+### Load libraries
+
+```{r, results="hide", message=FALSE}
+library(biomaRt)
+library(tidyverse)
+```
+
+### Load data
+
+Import the file containing the differential expression analysis results.
+
+```{r}
+de_diagnosis = read_csv("../outs/de_diagnosis.csv")
+
+de_diagnosis
+```
+
+Filter for DEM vs NOR.
+
+```{r}
+DEMvsNOR = de_diagnosis %>%
+  filter(term == "Dx_DEMoverN")
+
+DEMvsNOR
+```
+
+## Prepare data for GSEA
+
+### Uniprot Accession to Entrez ID
+
+Create a conversion table mapping Uniprot Accession ID to Entrez ID using the `biomaRt` package. This package allows access to the Ensembl database and supports conversions between various identifiers.
+
+```{r}
+# Connect to the Ensembl database
+ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+
+# Retrieve all Uniprot Accession to Entrez ID mappings
+conversion_table <- getBM(attributes = c("uniprotswissprot", "entrezgene_id"),
+                          mart = ensembl)
+
+# Rename columns for clarity
+colnames(conversion_table) <- c("UniprotAccession", "ENTREZID")
+
+# View the first few rows
+head(conversion_table)
+```
+
+Add the `ENTREZID` column to the `DEMvsNOR` dataframe.
+
+```{r}
+DEMvsNOR = merge(DEMvsNOR, conversion_table, by = "UniprotAccession", all.x=TRUE)
+
+head(DEMvsNOR)
+```
+
+```{r}
+# Select relevant columns
+DEMvsNOR_selected <- DEMvsNOR %>%
+  select(UniprotAccession, ENTREZID, GeneName, term, logFC, p.value, padj)
+
+# View the first few rows of the selected columns
+head(DEMvsNOR_selected)
+```
+
+### Ranking metric
+
+In order to have one ranking metric per Entrez ID, calculate the ranking metric and then take the gene-wise average. The ranking metric used here is:
+
+$$
+\text{Ranking metric} = -log_{10}(\text{p-value}) \times sign(\text{logFC})
+$$
+
+The negative logarithm on the p-value is scaled by the sign of the logFC value. This ensures that genes with higher logFC values (whether positive or negative) contribute more to the metric.
+
+Sort the genes in descending order by their ranking metric values and convert to a named vector called `geneList`.
+
+```{r}
+geneList = DEMvsNOR %>%
+  # Filter the dataset to exclude rows with missing values for ENTREZID and logFC to ensure only valid rows are used in the calculation
+  filter(!is.na(ENTREZID), !is.na(logFC)) %>%
+  # Calculate ranking metric
+  mutate(ranking_metric = -log10(padj)*sign(logFC)) %>%
+  # Grouping by Entez ID and calculating the average ranking_metric for each group
+  group_by(ENTREZID) %>% 
+  summarise(ranking_metric = mean(ranking_metric, na.rm = TRUE)) %>% 
+  # Sort descending
+  arrange(-ranking_metric) %>%
+  # Convert to named vector, where ENTREZID values are the names and ranking_metric values are values in the vector
+  tibble::deframe()
+
+head(geneList)
+tail(geneList)
+```
+
+`geneList` is a named vector, with each gene's `ENTREZID` as the name and its average `ranking_metric` as the value.
+
+## GSEA with `clusterProfiler` /`ReactomePA`
+
+`clusterProfiler` provides the `gseGO` and `gseKEGG` functions for FGSEA of the GO and KEGG databases, respectively. They are essentially more user-friendly wrapper functions that make use of the `fgsea` and `AnnotationDbi` package, but they tend to be much slower.
+
+### GO-BP FGSEA with `clusterProfiler` package: `gseGO()`
+
+```{r}
+library(clusterProfiler)
+
+system.time( # keep track of elapsed time
+  cgsea_res <- gseGO(geneList = geneList, 
+                     ont = "BP", 
+                     OrgDb = "org.Hs.eg.db", 
+                     minGSSize = 15, 
+                     maxGSSize = 500, 
+                     eps = 0, 
+                     nPermSimple = 10000, 
+                     seed = TRUE)
+)
+```
+
+```{r}
+# First 8 rows with lowest enrichment p-values
+cgsea_res@result %>% 
+  arrange(p.adjust) %>% 
+  head(8)
+```
+
+This produces the following columns:
+
+-   `ID`: GO term identifier.
+
+-   `Description`: Name of the Gene Ontology (GO) term.
+
+-   `setSize`: the number of genes in the gene set (pathway) that were found in the provided ranked list (`geneList`).
+
+-   `enrichmentScore`: a measure of enrichment that reflects the degree to which the GO term is overrepresented at the top or the bottom of the ranked list.
+
+-   `NES`: a normalised enrichment score that accounts for gene set size, making scores comparable across different gene sets.
+
+-   `pvalue`: nominal p-value from the enrichment test (significance of enrichment for that term).
+
+-   `p.adjust`: adjusted p-value (FDR corrected using the Benjamini-Hochberg method) to account for multiple testing.
+
+-   `q-value`: False discovery rate (FDR) q-value, which controls for multiple comparisons.
+
+-   `rank`: the position in the ranked gene list where the enrichment is strongest for the GO term.
+
+-   `leading_edge`: contains information about the distribution of genes contributing to the enrichment signal.
+
+The key metrics to focus on are:
+
+-   `NES`: used to compare enrichment scores across different gene sets.
+
+-   `p.adjust`: used for significance assessment.
+
+### Reactome FGSEA with `ReactomePA` package
+
+```{r}
+library(ReactomePA)
+
+fgsea_react <- gsePathway(geneList = geneList, 
+                          organism = "human",
+                          minGSSize = 15, 
+                          maxGSSize = 500, 
+                          eps = 0, 
+                          nPermSimple = 10000, 
+                          seed = TRUE)
+```
+
+```{r}
+# First 6 rows
+head(fgsea_react@result)
+```
