@@ -10,8 +10,6 @@ The data used in this example has been taken from ([Carlyle et al., 2021](https:
 
 This paper used multiplexed liquid chromatography mass-spectrometry to quantify enriched synaptic proteins from the parietal association cortex of 100 subjects with contrasting levels of AD pathology and cognitive performance.
 
-This file is used to assess protein enrichment across organelle subcellular compartments.
-
 ### Load libraries
 
 ```{r, results="hide", message=FALSE}
@@ -267,6 +265,10 @@ de_diagnosis = de_diagnosis %>%
   arrange(padj)
 
 knitr::kable(head(de_diagnosis))
+```
+
+```{r}
+write_csv(de_diagnosis, "../outs/de_diagnosis.csv")
 ```
 
 ### Summary table
