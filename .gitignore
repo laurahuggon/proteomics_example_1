@@ -52,3 +52,4 @@ data/
 scripts/1_preprocessing_files/
 scripts/2_subcellular_fraction_enrichment_files
 Scripts/3_differential_analysis_files
+outs/
