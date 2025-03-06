@@ -65590,20 +65590,23 @@ window.Quarto = {
 </table>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(de_diagnosis, <span class="st">"../outs/de_diagnosis.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="summary-table" class="level3">
 <h3 class="anchored" data-anchor-id="summary-table">Summary table</h3>
 <p>Create a summary table of proteins with significant differences.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>sig_summary_table <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(significant <span class="sc">==</span> <span class="st">"Yes"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(term, direction) <span class="sc">%&gt;%</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span> (<span class="at">n =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sig_summary_table <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(significant <span class="sc">==</span> <span class="st">"Yes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(term, direction) <span class="sc">%&gt;%</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span> (<span class="at">n =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`summarise()` has grouped output by 'term'. You can override using the
 `.groups` argument.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sig_summary_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sig_summary_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -65670,26 +65673,26 @@ window.Quarto = {
 </div>
 <p>Tidy the table.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sig_summary_table <span class="ot">=</span> sig_summary_table <span class="sc">%&gt;%</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert direction column into two separate columns with their respective n counts in each column</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(direction, n) <span class="sc">%&gt;%</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename the variable column name</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Variable =</span> term) <span class="sc">%&gt;%</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename the values in the variable column</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Variable =</span> <span class="fu">recode</span>(Variable,</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_DEMoverN"</span><span class="ot">=</span><span class="st">"Dx Dementia-AD vs Normal"</span>,</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverDEM"</span><span class="ot">=</span><span class="st">"Dx Frail vs Dementia-AD"</span>,</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverN"</span><span class="ot">=</span><span class="st">"Dx Frail vs Normal"</span>,</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverRES"</span><span class="ot">=</span><span class="st">"Dx Frail vs Resilient"</span>,</span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_RESoverDEM"</span><span class="ot">=</span><span class="st">"Dx Resilient vs Dementia-AD"</span>,</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_RESoverN"</span><span class="ot">=</span><span class="st">"Dx Resilient vs Normal"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Replace NAs with 0</span></span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reorder columns</span></span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Variable, Increase, Decrease)</span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sig_summary_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sig_summary_table <span class="ot">=</span> sig_summary_table <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert direction column into two separate columns with their respective n counts in each column</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(direction, n) <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename the variable column name</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Variable =</span> term) <span class="sc">%&gt;%</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rename the values in the variable column</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Variable =</span> <span class="fu">recode</span>(Variable,</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_DEMoverN"</span><span class="ot">=</span><span class="st">"Dx Dementia-AD vs Normal"</span>,</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverDEM"</span><span class="ot">=</span><span class="st">"Dx Frail vs Dementia-AD"</span>,</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverN"</span><span class="ot">=</span><span class="st">"Dx Frail vs Normal"</span>,</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_FRLoverRES"</span><span class="ot">=</span><span class="st">"Dx Frail vs Resilient"</span>,</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_RESoverDEM"</span><span class="ot">=</span><span class="st">"Dx Resilient vs Dementia-AD"</span>,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"Dx_RESoverN"</span><span class="ot">=</span><span class="st">"Dx Resilient vs Normal"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Replace NAs with 0</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reorder columns</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Variable, Increase, Decrease)</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sig_summary_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -65741,15 +65744,15 @@ window.Quarto = {
 <p>Create a heatmap of significant proteins for DEM vs NOR.</p>
 <p>Filter for significant proteins for DEM vs NOR.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(significant <span class="sc">==</span> <span class="st">"Yes"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span>)</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set as characters</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR<span class="sc">$</span>UniprotAccession <span class="ot">=</span> <span class="fu">as.character</span>(sig_DEMvsNOR<span class="sc">$</span>UniprotAccession)</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR<span class="sc">$</span>GeneName <span class="ot">=</span> <span class="fu">as.character</span>(sig_DEMvsNOR<span class="sc">$</span>GeneName)</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(sig_DEMvsNOR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(significant <span class="sc">==</span> <span class="st">"Yes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set as characters</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR<span class="sc">$</span>UniprotAccession <span class="ot">=</span> <span class="fu">as.character</span>(sig_DEMvsNOR<span class="sc">$</span>UniprotAccession)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>sig_DEMvsNOR<span class="sc">$</span>GeneName <span class="ot">=</span> <span class="fu">as.character</span>(sig_DEMvsNOR<span class="sc">$</span>GeneName)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(sig_DEMvsNOR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -65881,11 +65884,11 @@ window.Quarto = {
 </div>
 <p>Prepare the sample key.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for only DEM_AD and N samples</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>key_DEMvsNOR <span class="ot">=</span> sample_key <span class="sc">%&gt;%</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Project.diagnosis <span class="sc">==</span> <span class="st">"DEM_AD"</span> <span class="sc">|</span> Project.diagnosis <span class="sc">==</span> <span class="st">"N"</span>)</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(key_DEMvsNOR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for only DEM_AD and N samples</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>key_DEMvsNOR <span class="ot">=</span> sample_key <span class="sc">%&gt;%</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Project.diagnosis <span class="sc">==</span> <span class="st">"DEM_AD"</span> <span class="sc">|</span> Project.diagnosis <span class="sc">==</span> <span class="st">"N"</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(key_DEMvsNOR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -66070,10 +66073,10 @@ window.Quarto = {
 </tbody>
 </table>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create list of sample IDs (which is the Code column)</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sampleID_DEMvsNOR <span class="ot">=</span> key_DEMvsNOR<span class="sc">$</span>Code</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>sampleID_DEMvsNOR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create list of sample IDs (which is the Code column)</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>sampleID_DEMvsNOR <span class="ot">=</span> key_DEMvsNOR<span class="sc">$</span>Code</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>sampleID_DEMvsNOR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "A1"  "E6"  "G5"  "I2"  "J10" "J2"  "B10" "C1"  "G7"  "H10" "A2"  "C8" 
 [13] "E2"  "F4"  "G2"  "I3"  "J8"  "B5"  "D9"  "E7"  "E5"  "F6"  "G1"  "D10"
@@ -66084,19 +66087,19 @@ window.Quarto = {
 </div>
 <p>Prepare the data for heatmap. Create a subset of <code>TMT_data</code> with expression data for the samples and filter to significant proteins.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>for_heatmaps_DEMvsNOR <span class="ot">=</span> TMT_data <span class="sc">%&gt;%</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select relevant columns</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, GeneName, A1<span class="sc">:</span>J9) <span class="sc">%&gt;%</span></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter to only include proteins in sig_DEMvsNOR - keep rows where the value UniprotAccession column is found in UniprotAccession column in sig_DEMvsNOR</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(UniprotAccession <span class="sc">%in%</span> sig_DEMvsNOR<span class="sc">$</span>UniprotAccession) <span class="sc">%&gt;%</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove UniprotAccession column</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>UniprotAccession) <span class="sc">%&gt;%</span></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set GeneName column as row names</span></span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="st">"GeneName"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select releavnt columns based on sample IDs found the in the filtered sample ID list</span></span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(sampleID_DEMvsNOR))</span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(for_heatmaps_DEMvsNOR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>for_heatmaps_DEMvsNOR <span class="ot">=</span> TMT_data <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select relevant columns</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, GeneName, A1<span class="sc">:</span>J9) <span class="sc">%&gt;%</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter to only include proteins in sig_DEMvsNOR - keep rows where the value UniprotAccession column is found in UniprotAccession column in sig_DEMvsNOR</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(UniprotAccession <span class="sc">%in%</span> sig_DEMvsNOR<span class="sc">$</span>UniprotAccession) <span class="sc">%&gt;%</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove UniprotAccession column</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>UniprotAccession) <span class="sc">%&gt;%</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set GeneName column as row names</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="st">"GeneName"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select releavnt columns based on sample IDs found the in the filtered sample ID list</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(sampleID_DEMvsNOR))</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(for_heatmaps_DEMvsNOR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -66532,11 +66535,11 @@ window.Quarto = {
 </div>
 <p>Create a dataframe <code>dx_col</code> containing colours for each diagnosis group.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialise with default colour</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>dx_col <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">sampleID=</span>key_DEMvsNOR<span class="sc">$</span>Code, <span class="at">dx=</span>key_DEMvsNOR<span class="sc">$</span>Project.diagnosis, <span class="at">colour=</span><span class="st">"#5e3c99"</span>,<span class="at">stringsAsFactors =</span> F)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>dx_col<span class="sc">$</span>colour[dx_col<span class="sc">$</span>dx <span class="sc">==</span> <span class="st">"DEM_AD"</span>] <span class="ot">=</span> <span class="st">"#e66101"</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(dx_col))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialise with default colour</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>dx_col <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">sampleID=</span>key_DEMvsNOR<span class="sc">$</span>Code, <span class="at">dx=</span>key_DEMvsNOR<span class="sc">$</span>Project.diagnosis, <span class="at">colour=</span><span class="st">"#5e3c99"</span>,<span class="at">stringsAsFactors =</span> F)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>dx_col<span class="sc">$</span>colour[dx_col<span class="sc">$</span>dx <span class="sc">==</span> <span class="st">"DEM_AD"</span>] <span class="ot">=</span> <span class="st">"#e66101"</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(dx_col))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -66601,18 +66604,18 @@ Z = \frac{X - μ}{σ}
 </ul>
 <p>This scaling ensures that differences in expression patterns, rather than absolute expression levels, are highlighted for each protein.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap.2</span>(<span class="fu">t</span>(<span class="fu">as.matrix</span>(<span class="fu">log2</span>(for_heatmaps_DEMvsNOR))),</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">trace=</span><span class="st">"none"</span>,</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">scale=</span><span class="st">"col"</span>, <span class="co"># Centre and scale data</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">col=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">"steelblue"</span>,<span class="st">"white"</span>,<span class="st">"darkred"</span>))(<span class="dv">50</span>), <span class="co"># Colour scale</span></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Use diagnosis colours to annotate the samples</span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">RowSideColors=</span>dx_col<span class="sc">$</span>colour[<span class="fu">match</span>(<span class="fu">colnames</span>(for_heatmaps_DEMvsNOR), dx_col<span class="sc">$</span>sampleID)],</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">main=</span><span class="st">"Significant DE proteins: DEM vs NOR"</span>,</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">cexCol =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap.2</span>(<span class="fu">t</span>(<span class="fu">as.matrix</span>(<span class="fu">log2</span>(for_heatmaps_DEMvsNOR))),</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">trace=</span><span class="st">"none"</span>,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">scale=</span><span class="st">"col"</span>, <span class="co"># Centre and scale data</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">col=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">"steelblue"</span>,<span class="st">"white"</span>,<span class="st">"darkred"</span>))(<span class="dv">50</span>), <span class="co"># Colour scale</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Use diagnosis colours to annotate the samples</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">RowSideColors=</span>dx_col<span class="sc">$</span>colour[<span class="fu">match</span>(<span class="fu">colnames</span>(for_heatmaps_DEMvsNOR), dx_col<span class="sc">$</span>sampleID)],</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">main=</span><span class="st">"Significant DE proteins: DEM vs NOR"</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">cexCol =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="3_differential_analysis_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="3_differential_analysis_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="960"></p>
 </figure>
 </div>
 </div>
@@ -66622,59 +66625,59 @@ Z = \frac{X - μ}{σ}
 <h2 class="anchored" data-anchor-id="volcano-plot">Volcano plot</h2>
 <p>Prepare data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for term and selct columns</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>de <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, GeneName, term, logFC, padj)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set thresholds</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>thresh_fc<span class="ot">=</span><span class="fl">0.1</span> <span class="co"># Threshold for log2 fold change</span></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>thresh_pval<span class="ot">=</span><span class="fl">0.05</span> <span class="co"># Threshold for adjusted p-value</span></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Count total proteins</span></span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>n_total <span class="ot">=</span> <span class="fu">nrow</span>(de) <span class="co"># 3924 proteins</span></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Count how many proteins are in each category (unchanged, upregulated, downregulated)</span></span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>n_unchanged <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is between -thresh_fc and +thresh_fc</span></span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&lt;</span> thresh_fc <span class="sc">&amp;</span> logFC <span class="sc">&gt;</span> <span class="sc">-</span>(thresh_fc)) <span class="sc">%&gt;%</span></span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>n_up <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is greater than thresh_fc and significant</span></span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&gt;=</span> thresh_fc <span class="sc">&amp;</span> padj <span class="sc">&lt;=</span> thresh_pval) <span class="sc">%&gt;%</span></span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>n_down <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
-<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is less than -thresh_fc and significant</span></span>
-<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&lt;=</span> <span class="sc">-</span>(thresh_fc) <span class="sc">&amp;</span> padj <span class="sc">&lt;=</span> thresh_pval) <span class="sc">%&gt;%</span></span>
-<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
-<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign DE lables to proteins</span></span>
-<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Unchanged ("</span>,n_unchanged,<span class="st">")"</span>)</span>
-<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression[de<span class="sc">$</span>logFC <span class="sc">&gt;=</span> thresh_fc <span class="sc">&amp;</span> de<span class="sc">$</span>padj <span class="sc">&lt;=</span> thresh_pval] <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Up ("</span>,n_up,<span class="st">")"</span>)</span>
-<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression[de<span class="sc">$</span>logFC <span class="sc">&lt;=</span> <span class="sc">-</span>(thresh_fc) <span class="sc">&amp;</span> de<span class="sc">$</span>padj <span class="sc">&lt;=</span> thresh_pval] <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Down ("</span>,n_down,<span class="st">")"</span>)</span>
-<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Set colours for plot - the order of colours will correspond to the order of levels in the factor variable de$Expression</span></span>
-<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (n_up <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> n_down <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are no up or downregulated genes</span></span>
-<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#84A1AB"</span>) <span class="co"># Use grey-blue for all genes</span></span>
-<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (n_up <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are only downregulated genes</span></span>
-<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#B02302"</span>, <span class="st">"#84A1AB"</span>) <span class="co"># Use red for down genes and grey-blue for unchanged genes</span></span>
-<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (n_down <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are only upregulated genes</span></span>
-<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#84A1AB"</span>, <span class="st">"#61B002"</span>) <span class="co"># Use grey-blue for unchanged genes and green for up genes</span></span>
-<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> { <span class="co"># If there are downregulated and upregulated genes</span></span>
-<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#B02302"</span>, <span class="st">"#84A1AB"</span>, <span class="st">"#61B002"</span>) <span class="co"># Use red for down genes, and grey-blue for unchanged genes, and green for up genes</span></span>
-<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Add gene names to genes that are differentially expressed</span></span>
-<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Create "delabel" column and initialise with NA values for all rows (by default, no genes are labelled on the plot)</span></span>
-<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>delabel <span class="ot">=</span> <span class="cn">NA</span></span>
-<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Select delabel entries where expression does not contain "Unchanged"</span></span>
-<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign GeneName where expression does not contain "Unchanged"</span></span>
-<span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>delabel[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"Unchanged"</span>, de<span class="sc">$</span>expression)] <span class="ot">&lt;-</span> de<span class="sc">$</span>GeneName[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"Unchanged"</span>, de<span class="sc">$</span>expression)]</span>
-<span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort the data frame by adjusted p-values</span></span>
-<span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a>de <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
-<span id="cb36-51"><a href="#cb36-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(padj)</span>
-<span id="cb36-52"><a href="#cb36-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-53"><a href="#cb36-53" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(de))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for term and selct columns</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>de <span class="ot">=</span> de_diagnosis <span class="sc">%&gt;%</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Dx_DEMoverN"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(UniprotAccession, GeneName, term, logFC, padj)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set thresholds</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>thresh_fc<span class="ot">=</span><span class="fl">0.1</span> <span class="co"># Threshold for log2 fold change</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>thresh_pval<span class="ot">=</span><span class="fl">0.05</span> <span class="co"># Threshold for adjusted p-value</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Count total proteins</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>n_total <span class="ot">=</span> <span class="fu">nrow</span>(de) <span class="co"># 3924 proteins</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Count how many proteins are in each category (unchanged, upregulated, downregulated)</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>n_unchanged <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is between -thresh_fc and +thresh_fc</span></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&lt;</span> thresh_fc <span class="sc">&amp;</span> logFC <span class="sc">&gt;</span> <span class="sc">-</span>(thresh_fc)) <span class="sc">%&gt;%</span></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>n_up <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is greater than thresh_fc and significant</span></span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&gt;=</span> thresh_fc <span class="sc">&amp;</span> padj <span class="sc">&lt;=</span> thresh_pval) <span class="sc">%&gt;%</span></span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>n_down <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter for proteins where logFC is less than -thresh_fc and significant</span></span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(logFC <span class="sc">&lt;=</span> <span class="sc">-</span>(thresh_fc) <span class="sc">&amp;</span> padj <span class="sc">&lt;=</span> thresh_pval) <span class="sc">%&gt;%</span></span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign DE lables to proteins</span></span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Unchanged ("</span>,n_unchanged,<span class="st">")"</span>)</span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression[de<span class="sc">$</span>logFC <span class="sc">&gt;=</span> thresh_fc <span class="sc">&amp;</span> de<span class="sc">$</span>padj <span class="sc">&lt;=</span> thresh_pval] <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Up ("</span>,n_up,<span class="st">")"</span>)</span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>expression[de<span class="sc">$</span>logFC <span class="sc">&lt;=</span> <span class="sc">-</span>(thresh_fc) <span class="sc">&amp;</span> de<span class="sc">$</span>padj <span class="sc">&lt;=</span> thresh_pval] <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"Down ("</span>,n_down,<span class="st">")"</span>)</span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Set colours for plot - the order of colours will correspond to the order of levels in the factor variable de$Expression</span></span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (n_up <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> n_down <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are no up or downregulated genes</span></span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#84A1AB"</span>) <span class="co"># Use grey-blue for all genes</span></span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (n_up <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are only downregulated genes</span></span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#B02302"</span>, <span class="st">"#84A1AB"</span>) <span class="co"># Use red for down genes and grey-blue for unchanged genes</span></span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (n_down <span class="sc">==</span> <span class="dv">0</span>){ <span class="co"># If there are only upregulated genes</span></span>
+<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#84A1AB"</span>, <span class="st">"#61B002"</span>) <span class="co"># Use grey-blue for unchanged genes and green for up genes</span></span>
+<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> { <span class="co"># If there are downregulated and upregulated genes</span></span>
+<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a>      cvec <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#B02302"</span>, <span class="st">"#84A1AB"</span>, <span class="st">"#61B002"</span>) <span class="co"># Use red for down genes, and grey-blue for unchanged genes, and green for up genes</span></span>
+<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Add gene names to genes that are differentially expressed</span></span>
+<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Create "delabel" column and initialise with NA values for all rows (by default, no genes are labelled on the plot)</span></span>
+<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>delabel <span class="ot">=</span> <span class="cn">NA</span></span>
+<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Select delabel entries where expression does not contain "Unchanged"</span></span>
+<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign GeneName where expression does not contain "Unchanged"</span></span>
+<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>de<span class="sc">$</span>delabel[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"Unchanged"</span>, de<span class="sc">$</span>expression)] <span class="ot">&lt;-</span> de<span class="sc">$</span>GeneName[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"Unchanged"</span>, de<span class="sc">$</span>expression)]</span>
+<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort the data frame by adjusted p-values</span></span>
+<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a>de <span class="ot">=</span> de <span class="sc">%&gt;%</span></span>
+<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(padj)</span>
+<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(de))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -66758,25 +66761,25 @@ Z = \frac{X - μ}{σ}
 </div>
 <p>Generate volcano plot, where the x-axis is mapped to the log2 fold change values (i.e.&nbsp;magnitude of change) and the y-axis is mapped to the -log10 of the padj values (i.e.&nbsp;significance).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>de, <span class="fu">aes</span>(<span class="at">x=</span>logFC, <span class="at">y=</span><span class="sc">-</span><span class="fu">log10</span>(padj)))  <span class="sc">+</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add vertical dashed lines at the foldchange thresholds</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="fu">c</span>(<span class="sc">-</span>(thresh_fc), thresh_fc), <span class="at">col=</span><span class="st">"light grey"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add horizontal dashed line at the pval threshold</span></span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="sc">-</span><span class="fu">log10</span>(thresh_pval), <span class="at">col=</span><span class="st">"light grey"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add points to the plot, coloured by "expression" column</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>expression), <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add text lables (avoiding overlap) to the top 25 most signficant DE genes</span></span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Set x- and y-coordinates for labels using "logFC" and "padj" columns</span></span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_text_repel</span>(<span class="at">data=</span>de[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>,],<span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(padj),<span class="at">label=</span>delabel),<span class="at">max.overlaps=</span><span class="dv">25</span>,<span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Use colours specified earlier</span></span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>          <span class="fu">scale_color_manual</span>(<span class="at">values=</span>cvec) <span class="sc">+</span></span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Set appearance</span></span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>          <span class="fu">theme_few</span>() <span class="sc">+</span></span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>          <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Dx_DEMoverN"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>de, <span class="fu">aes</span>(<span class="at">x=</span>logFC, <span class="at">y=</span><span class="sc">-</span><span class="fu">log10</span>(padj)))  <span class="sc">+</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add vertical dashed lines at the foldchange thresholds</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="fu">c</span>(<span class="sc">-</span>(thresh_fc), thresh_fc), <span class="at">col=</span><span class="st">"light grey"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add horizontal dashed line at the pval threshold</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="sc">-</span><span class="fu">log10</span>(thresh_pval), <span class="at">col=</span><span class="st">"light grey"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add points to the plot, coloured by "expression" column</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>expression), <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Add text lables (avoiding overlap) to the top 25 most signficant DE genes</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Set x- and y-coordinates for labels using "logFC" and "padj" columns</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_text_repel</span>(<span class="at">data=</span>de[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>,],<span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(padj),<span class="at">label=</span>delabel),<span class="at">max.overlaps=</span><span class="dv">25</span>,<span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Use colours specified earlier</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>          <span class="fu">scale_color_manual</span>(<span class="at">values=</span>cvec) <span class="sc">+</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Set appearance</span></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>          <span class="fu">theme_few</span>() <span class="sc">+</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>          <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Dx_DEMoverN"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="3_differential_analysis_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="720"></p>
+<p><img src="3_differential_analysis_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="720"></p>
 </figure>
 </div>
 </div>
