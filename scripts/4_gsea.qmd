@@ -17,6 +17,30 @@ library(biomaRt)
 library(tidyverse)
 ```
 
+### **Printing tables**
+
+Create a function for displaying tables differently in the `.qmd` and `.html` files.
+
+```{r}
+table_display = function(df) {
+  if (knitr::is_html_output()) {
+    knitr::kable(head(df)) %>%
+      kableExtra::column_spec(1:ncol(df), extra_css = "white-space: nowrap;")
+  } else {
+    head(df)
+  }
+}
+
+table_display_full = function(df) {
+  if (knitr::is_html_output()) {
+    knitr::kable(df) %>%
+      kableExtra::column_spec(1:ncol(df), extra_css = "white-space: nowrap;")
+  } else {
+    df
+  }
+}
+```
+
 ### Load data
 
 Import the file containing the differential expression analysis results.
@@ -24,7 +48,7 @@ Import the file containing the differential expression analysis results.
 ```{r}
 de_diagnosis = read_csv("../outs/de_diagnosis.csv")
 
-de_diagnosis
+table_display(de_diagnosis)
 ```
 
 Filter for DEM vs NOR.
@@ -33,7 +57,7 @@ Filter for DEM vs NOR.
 DEMvsNOR = de_diagnosis %>%
   filter(term == "Dx_DEMoverN")
 
-DEMvsNOR
+table_display(DEMvsNOR)
 ```
 
 ## Prepare data for GSEA
@@ -54,7 +78,7 @@ conversion_table <- getBM(attributes = c("uniprotswissprot", "entrezgene_id"),
 colnames(conversion_table) <- c("UniprotAccession", "ENTREZID")
 
 # View the first few rows
-head(conversion_table)
+table_display(conversion_table)
 ```
 
 Add the `ENTREZID` column to the `DEMvsNOR` dataframe.
@@ -62,7 +86,7 @@ Add the `ENTREZID` column to the `DEMvsNOR` dataframe.
 ```{r}
 DEMvsNOR = merge(DEMvsNOR, conversion_table, by = "UniprotAccession", all.x=TRUE)
 
-head(DEMvsNOR)
+table_display(DEMvsNOR)
 ```
 
 ```{r}
@@ -71,7 +95,7 @@ DEMvsNOR_selected <- DEMvsNOR %>%
   select(UniprotAccession, ENTREZID, GeneName, term, logFC, p.value, padj)
 
 # View the first few rows of the selected columns
-head(DEMvsNOR_selected)
+table_display(DEMvsNOR_selected)
 ```
 
 ### Ranking metric
@@ -112,8 +136,9 @@ tail(geneList)
 
 ### GO-BP FGSEA with `clusterProfiler` package: `gseGO()`
 
-```{r}
+```{r, message=FALSE}
 library(clusterProfiler)
+library(org.Hs.eg.db)
 
 system.time( # keep track of elapsed time
   cgsea_res <- gseGO(geneList = geneList, 
@@ -164,7 +189,7 @@ The key metrics to focus on are:
 
 ### Reactome FGSEA with `ReactomePA` package
 
-```{r}
+```{r, message=FALSE}
 library(ReactomePA)
 
 fgsea_react <- gsePathway(geneList = geneList, 
@@ -178,5 +203,5 @@ fgsea_react <- gsePathway(geneList = geneList,
 
 ```{r}
 # First 6 rows
-head(fgsea_react@result)
+table_display(fgsea_react@result)
 ```
